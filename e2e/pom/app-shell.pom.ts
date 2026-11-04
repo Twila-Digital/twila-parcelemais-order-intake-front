@@ -7,7 +7,7 @@ export class AppShellPom {
 
   constructor(page: Page) {
     this.page = page
-    this.logo = page.getByRole('img', { name: 'Credicarro' })
+    this.logo = page.getByRole('img', { name: 'Parcele Mais' })
     this.footer = page.getByRole('contentinfo')
   }
 

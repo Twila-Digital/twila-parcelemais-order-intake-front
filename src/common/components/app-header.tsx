@@ -1,4 +1,4 @@
-import LogoCredicarro from '@public/images/logo-credicarro.svg'
+import LogoParceleMais from '@public/images/logo-parcelemais.svg'
 import Image from 'next/image'
 import { PAGE_CONTAINER_CLASS } from './page-container'
 
@@ -23,8 +23,8 @@ export function AppHeader({ logoUrl }: AppHeaderProps) {
         />
       ) : (
         <Image
-          src={LogoCredicarro}
-          alt='Credicarro'
+          src={LogoParceleMais}
+          alt='Parcele Mais'
           className={LOGO_CLASS}
           priority
         />

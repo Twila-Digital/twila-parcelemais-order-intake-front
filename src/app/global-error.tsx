@@ -20,7 +20,7 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <html lang='pt-BR' data-brand='credicarro' data-mode='light'>
+    <html lang='pt-BR' data-brand='parcelemais' data-mode='light'>
       <body className='flex min-h-dvh flex-col'>
         <ErrorPage
           title='Algo deu errado'

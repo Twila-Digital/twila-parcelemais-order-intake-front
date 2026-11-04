@@ -1,13 +1,13 @@
 @import "tailwindcss";
 @import "@twila-digital/tokens/theme";
-@import "@twila-digital/tokens/credicarro/light";
+@import "@twila-digital/tokens/parcelemais/light";
 
 @plugin "tailwindcss-animate";
 @source "../../node_modules/@twila-digital/components/dist";
 
 @custom-variant dark (&:is(.dark *));
 
-[data-brand="credicarro"] {
+[data-brand="parcelemais"] {
   --font-heading: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;

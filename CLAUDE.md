@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Front do fluxo de criação de proposta via WhatsApp (Credicarro). Segue o mesmo padrão de `twila-credicarro-front` e `twila-credicarro-store-area-front`. Na dúvida, consulte como esses projetos resolvem.
+Front do fluxo de criação de proposta via WhatsApp (Parcele Mais / Cartão Simples), copiado do `twila-credicarro-proposal-intake-front`. Segue o mesmo padrão dele, de `twila-credicarro-front` e `twila-credicarro-store-area-front`. Na dúvida, consulte como esses projetos resolvem.
 
 ## Comandos
 

@@ -1,4 +1,4 @@
-# Credicarro — Proposal Intake Front
+# Parcele Mais — Proposal Intake Front
 
 Front do fluxo de proposta iniciado pelo WhatsApp. O backend envia um link `/intake/{token}`; a pessoa escolhe receber um código por SMS ou WhatsApp (vai para o celular cadastrado na proposta, sem digitar o número) e, a cada nova mensagem no WhatsApp, volta pelo mesmo link para fazer a etapa da vez.
 
@@ -13,7 +13,7 @@ Design (Figma — C2C WhatsApp): [comprador](https://www.figma.com/design/b4vmVX
    - sem cookie de acesso → verificação (canal SMS/WhatsApp → código → etapa ativa);
    - com cookie → redireciona pela `getIntakeEntryRoute` (`src/common/records/intake-step-route.record.ts`): comprador com `proposal.status` `InNegotiation` → `/novas-condicoes`; `Analysing` (ou o vendedor em `InNegotiation`) → `/proposta-em-analise`; nos demais, a etapa do `activeStatus`;
    - `activeStatus` nulo → `/proposta-finalizada`; `dateAndStatus` nulo em outro status → `/etapa-indisponivel`.
-2. `404` do start → "Link inválido ou expirado"; `410` → "Essa proposta foi encerrada" (5.1, com o botão "Falar com o suporte" para o WhatsApp da Credicarro, `constants/app-info.ts`, também com white label).
+2. `404` do start → "Link inválido ou expirado"; `410` → "Essa proposta foi encerrada" (5.1, com o botão "Falar com o suporte" para o WhatsApp do Parcele Mais, `constants/app-info.ts`, também com white label).
 3. O layout do token aplica o whitelabel do `start` (cores, raios, fontes e logo) com `@twila-digital/components/white-label`.
 
 ## Chamadas à API
@@ -69,12 +69,12 @@ Mensagens repetidas ou mais antigas (`occurredAt`) são descartadas. Ao conectar
 
 **Contraproposta (CAR-1955).** Com a proposta em `InNegotiation`, o start vem com `dateAndStatus: null` e o comprador vai para `/novas-condicoes` (sempre depois da verificação). A tela carrega no servidor o `intake/new-conditions` e o `intake/proposal` (card "Proposta enviada") e mostra só as condições em `InNegotiation`, uma por chip de prazo, ordenadas pelo `term`; sem chips quando há uma só. "Detalhes das parcelas" abre o modal de CET da condição escolhida. Aceitar ou recusar envia a condição do chip escolhido e mostra na hora a 2.1 (aceitas) ou a 2.2 (recusadas): a troca de status no backend é assíncrona, e o `ProposalStatusChanged` (ou o polling sem conexão) leva para a tela seguinte. Recusar encerra a proposta (`Refused`). Sem condição pendente, vale a última decisão da lista: `Refused` mostra a 2.2 e `Accepted` mostra a 2.1. Lista vazia (condições ainda sendo geradas) mostra o volante e recarrega a cada 5s por até 1 minuto; depois, "Continue pelo WhatsApp". Os `409` (`ProposalNotInNegotiation`, `CounterProposalAlreadyDecided`, `CounterProposalNotFound`) e o `410` recarregam a tela. O vendedor em `InNegotiation` ou `Analysing` vê "Proposta em análise" e não chama o `new-conditions`. A entrada pelo C2C não muda: o `access` já ignora qualquer erro do redeem, inclusive o `409 Intake.ProposalInAnalysis` que o backend devolve até o deploy do PR #3724.
 
-**Entre etapas.** O intake não manda a pessoa de volta ao WhatsApp entre as etapas. Depois da verificação, a entrada do link redireciona para a etapa ativa. Depois de cada etapa, `useAdvanceIntakeStep` consulta o start **uma vez**: se a etapa ativa já mudou, segue para ela. Se não, o volante de tela cheia fica na tela até o `ActiveStatusChanged` (ou o polling de reserva) levar para a próxima. Não há telas de sucesso entre etapas; só a tela final (7.0, `modules/intake-finished`), com a data de desembolso para o vendedor e o botão "Acessar Credicarro", que abre a proposta no painel do site para o comprador (`NEXT_PUBLIC_CREDICARRO_URL` + `/painel/propostas/{proposalId}`) e a home do site para o vendedor (`NEXT_PUBLIC_CREDICARRO_URL`); escondido com white label.
+**Entre etapas.** O intake não manda a pessoa de volta ao WhatsApp entre as etapas. Depois da verificação, a entrada do link redireciona para a etapa ativa. Depois de cada etapa, `useAdvanceIntakeStep` consulta o start **uma vez**: se a etapa ativa já mudou, segue para ela. Se não, o volante de tela cheia fica na tela até o `ActiveStatusChanged` (ou o polling de reserva) levar para a próxima. Não há telas de sucesso entre etapas; só a tela final (7.0, `modules/intake-finished`), com a data de desembolso para o vendedor e o botão "Acessar Parcele Mais", que abre a proposta no painel do site para o comprador (`NEXT_PUBLIC_PARCELEMAIS_URL` + `/painel/propostas/{proposalId}`) e a home do site para o vendedor (`NEXT_PUBLIC_PARCELEMAIS_URL`); escondido com white label.
 
 ## Stack
 
 - Next.js 16 (App Router, Turbopack) + React 19 + TypeScript
-- Design system `@twila-digital/components` + `@twila-digital/tokens` (tema `credicarro`), Tailwind CSS v4
+- Design system `@twila-digital/components` + `@twila-digital/tokens` (tema `parcelemais`), Tailwind CSS v4
 - TanStack Query, axios, React Hook Form + Zod, jotai
 - Datadog RUM/Logs + feature flags (OpenFeature, provider Datadog)
 - Biome, Husky, lint-staged, commitlint
@@ -103,7 +103,7 @@ Não há API falsa: o `npm run dev` fala com a API de dev/staging. No `.env.loca
 - `API_URL`: host da API sem `/api/v1` (ex.: `https://api.staging.credicarro.com.br`).
 - `INTAKE_HMAC_SECRET`: o segredo do mesmo ambiente (peça ao time de backend; fica no SSM).
 - `NEXT_PUBLIC_WEBSOCKET_URL`: host do gateway para o WebSocket, sem `/api` (o mesmo do `API_URL`).
-- `NEXT_PUBLIC_CREDICARRO_URL`: site da Credicarro do ambiente (staging: `https://staging.credicarro.com.br`; produção: `https://www.credicarro.com.br`). A tela final leva o comprador para `/painel/propostas/{proposalId}` e o vendedor para a home.
+- `NEXT_PUBLIC_PARCELEMAIS_URL`: site do Parcele Mais do ambiente (staging: `https://staging.parcelemais.com.br`; produção: `https://www.parcelemais.com.br`). A tela final leva o comprador para `/painel/propostas/{proposalId}` e o vendedor para a home.
 
 Para testar, gere um convite de intake no ambiente (proposta com o seu celular) e abra `http://localhost:3000/intake/{token}` com o token do link recebido. O código chega no celular do convite. Para refazer a verificação, apague o cookie `intake_session_*`.
 

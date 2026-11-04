@@ -26,7 +26,7 @@ const archivo = Archivo({
 })
 
 export const metadata: Metadata = {
-  title: 'Proposta | Parcele Mais',
+  title: 'Pedido | Parcele Mais',
   robots: { index: false, follow: false },
 }
 

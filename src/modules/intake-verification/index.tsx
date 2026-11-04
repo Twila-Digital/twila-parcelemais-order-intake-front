@@ -132,7 +132,7 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
     >
       <div className='flex flex-col gap-lg tablet:gap-xxl'>
         <PageTitle
-          title='Acesse sua proposta'
+          title='Acesse seu pedido'
           description='Escolha como quer receber o código de acesso.'
           illustration={ILLUSTRATIONS.phone}
         />
@@ -215,7 +215,7 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
         disabled={!isCodeStage}
         loading={verifyToken.isPending || isRedirecting}
       >
-        Acessar proposta
+        Acessar pedido
       </Button>
     </form>
   )

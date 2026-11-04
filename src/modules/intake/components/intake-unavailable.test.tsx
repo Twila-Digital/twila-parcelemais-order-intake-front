@@ -8,7 +8,7 @@ describe('IntakeUnavailable', () => {
     renderWithProviders(<IntakeUnavailable reason='closed' />)
 
     expect(
-      screen.getByRole('heading', { name: 'Essa proposta foi encerrada' }),
+      screen.getByRole('heading', { name: 'Esse pedido foi encerrado' }),
     ).toBeInTheDocument()
     const support = screen.getByRole('link', { name: 'Falar com o suporte' })
     expect(support).toHaveAttribute('href', 'https://wa.me/5547997724516')

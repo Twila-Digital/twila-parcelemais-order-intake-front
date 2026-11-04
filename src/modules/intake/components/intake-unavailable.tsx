@@ -18,11 +18,11 @@ const MESSAGES: Record<
       'Este link não é mais válido. Use o link mais recente que enviamos no WhatsApp.',
   },
   closed: {
-    title: 'Essa proposta foi encerrada',
+    title: 'Esse pedido foi encerrado',
     description: 'Fale com a gente pelo WhatsApp se precisar de ajuda.',
   },
   error: {
-    title: 'Não foi possível carregar sua proposta',
+    title: 'Não foi possível carregar seu pedido',
     description: 'Tente novamente em alguns instantes.',
   },
 }

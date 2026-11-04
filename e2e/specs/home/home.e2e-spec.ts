@@ -6,7 +6,7 @@ test.describe('home', () => {
     const shell = new AppShellPom(page)
     await shell.goto()
 
-    await expect(page).toHaveTitle('Proposta | Parcele Mais')
+    await expect(page).toHaveTitle('Pedido | Parcele Mais')
     await expect(shell.logo).toBeVisible()
     await expect(shell.footer).toContainText('Feito por')
   })

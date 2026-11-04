@@ -7,7 +7,7 @@ export default function HomePage() {
       <StatusScreen
         tone='info'
         title='Acesse pelo link do WhatsApp'
-        description='Para continuar sua proposta, abra o link que enviamos para você no WhatsApp.'
+        description='Para continuar seu pedido, abra o link que enviamos para você no WhatsApp.'
       />
     </PageShell>
   )

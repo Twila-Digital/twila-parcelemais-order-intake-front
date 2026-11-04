@@ -1,6 +1,6 @@
-# Parcele Mais — Proposal Intake Front
+# Parcele Mais — Order Intake Front
 
-Front do fluxo de proposta iniciado pelo WhatsApp do Parcele Mais / Cartão Simples. O backend envia um link `/intake/{token}`; a pessoa confirma o acesso por um código (SMS ou WhatsApp) e segue pelas etapas da proposta.
+Front do fluxo de pedido iniciado pelo WhatsApp do Parcele Mais / Cartão Simples. O backend envia um link `/intake/{token}`; a pessoa confirma o acesso por um código (SMS ou WhatsApp) e segue pelas etapas do pedido.
 
 ## Stack
 

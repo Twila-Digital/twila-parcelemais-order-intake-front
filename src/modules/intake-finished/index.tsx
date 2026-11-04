@@ -15,10 +15,10 @@ import { env } from '@/env'
 
 const CLOSE_HINT = 'Você já pode fechar esta tela.'
 const CLOSE_OR_VISIT_HINT =
-  'Você já pode fechar esta tela ou acessar nosso site para conhecer mais sobre a Credicarro.'
+  'Você já pode fechar esta tela ou acessar nosso site para conhecer mais sobre o Parcele Mais.'
 
-function getCredicarroUrl(flow: IntakeFlow, proposalId: string) {
-  const baseUrl = env.NEXT_PUBLIC_CREDICARRO_URL.replace(/\/+$/, '')
+function getSiteUrl(flow: IntakeFlow, proposalId: string) {
+  const baseUrl = env.NEXT_PUBLIC_PARCELEMAIS_URL.replace(/\/+$/, '')
   if (flow === IntakeFlow.Seller) return baseUrl
   return `${baseUrl}/painel/propostas/${encodeURIComponent(proposalId)}`
 }
@@ -66,11 +66,11 @@ export function IntakeFinished({
       {!hasWhiteLabel && (
         <Button size={fieldSize} fullWidth asChild>
           <a
-            href={getCredicarroUrl(flow, proposalId)}
+            href={getSiteUrl(flow, proposalId)}
             target='_blank'
             rel='noopener noreferrer'
           >
-            Acessar Credicarro
+            Acessar Parcele Mais
             <FontAwesomeIcon icon={faUpRightFromSquare} aria-hidden />
           </a>
         </Button>

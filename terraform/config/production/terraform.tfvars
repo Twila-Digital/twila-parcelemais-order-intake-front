@@ -17,7 +17,7 @@ environment_variables                       = {
   NEXT_PUBLIC_IN_MAINTENANCE = "false",
   NEXT_PUBLIC_DATADOG_CLIENT_SERVICE = "credicarro-proposal-intake-production",
   NEXT_PUBLIC_WEBSOCKET_URL = "https://api.credicarro.com.br",
-  NEXT_PUBLIC_CREDICARRO_URL = "https://www.credicarro.com.br",
+  NEXT_PUBLIC_PARCELEMAIS_URL = "https://www.parcelemais.com.br",
 }
 
 environments                                = {

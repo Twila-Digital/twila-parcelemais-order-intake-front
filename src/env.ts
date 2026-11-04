@@ -14,7 +14,7 @@ export const env = createEnv({
     NEXT_PUBLIC_DATADOG_CLIENT_SERVICE: z.string().optional(),
     NEXT_PUBLIC_APP_VERSION: z.string().optional(),
     NEXT_PUBLIC_WEBSOCKET_URL: z.url(),
-    NEXT_PUBLIC_CREDICARRO_URL: z.url(),
+    NEXT_PUBLIC_PARCELEMAIS_URL: z.url(),
   },
   runtimeEnv: {
     API_URL: process.env.API_URL,
@@ -27,7 +27,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_DATADOG_CLIENT_SERVICE,
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION,
     NEXT_PUBLIC_WEBSOCKET_URL: process.env.NEXT_PUBLIC_WEBSOCKET_URL,
-    NEXT_PUBLIC_CREDICARRO_URL: process.env.NEXT_PUBLIC_CREDICARRO_URL,
+    NEXT_PUBLIC_PARCELEMAIS_URL: process.env.NEXT_PUBLIC_PARCELEMAIS_URL,
   },
   skipValidation:
     !!process.env.SKIP_ENV_VALIDATION ||

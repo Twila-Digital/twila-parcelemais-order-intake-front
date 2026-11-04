@@ -5,7 +5,7 @@ import type { IntakeProposalSummary } from '@/domain/intake.domain'
 import { IntakeFinished } from '.'
 
 vi.mock('@/env', () => ({
-  env: { NEXT_PUBLIC_CREDICARRO_URL: 'https://staging.credicarro.com.br/' },
+  env: { NEXT_PUBLIC_PARCELEMAIS_URL: 'https://staging.parcelemais.com.br/' },
 }))
 
 const summary: IntakeProposalSummary = {
@@ -41,7 +41,7 @@ function renderFinished({
 }
 
 describe('IntakeFinished', () => {
-  it('links to the proposal in the Credicarro panel of the environment', () => {
+  it('links to the proposal in the Parcele Mais panel of the environment', () => {
     renderFinished()
 
     expect(
@@ -52,12 +52,12 @@ describe('IntakeFinished', () => {
     expect(
       screen.getByText(/Você finalizou sua proposta e está tudo certo\./),
     ).toHaveTextContent(
-      'acessar nosso site para conhecer mais sobre a Credicarro',
+      'acessar nosso site para conhecer mais sobre o Parcele Mais',
     )
-    const link = screen.getByRole('link', { name: 'Acessar Credicarro' })
+    const link = screen.getByRole('link', { name: 'Acessar Parcele Mais' })
     expect(link).toHaveAttribute(
       'href',
-      'https://staging.credicarro.com.br/painel/propostas/d32e3820-1779-40fc-81da-d127de143aea',
+      'https://staging.parcelemais.com.br/painel/propostas/d32e3820-1779-40fc-81da-d127de143aea',
     )
     expect(link).toHaveAttribute('target', '_blank')
   })
@@ -79,22 +79,22 @@ describe('IntakeFinished', () => {
     ).toBeInTheDocument()
   })
 
-  it('links the seller to the Credicarro home of the environment', () => {
+  it('links the seller to the Parcele Mais home of the environment', () => {
     renderFinished({ flow: IntakeFlow.Seller })
 
     expect(
-      screen.getByRole('link', { name: 'Acessar Credicarro' }),
-    ).toHaveAttribute('href', 'https://staging.credicarro.com.br')
+      screen.getByRole('link', { name: 'Acessar Parcele Mais' }),
+    ).toHaveAttribute('href', 'https://staging.parcelemais.com.br')
   })
 
-  it('hides the Credicarro link and mention with a white label', () => {
+  it('hides the Parcele Mais link and mention with a white label', () => {
     renderFinished({ hasWhiteLabel: true })
 
     expect(
-      screen.queryByRole('link', { name: 'Acessar Credicarro' }),
+      screen.queryByRole('link', { name: 'Acessar Parcele Mais' }),
     ).not.toBeInTheDocument()
     expect(
       screen.getByText(/Você já pode fechar esta tela\./),
-    ).not.toHaveTextContent('Credicarro')
+    ).not.toHaveTextContent('Parcele Mais')
   })
 })

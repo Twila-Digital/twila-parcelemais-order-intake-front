@@ -49,7 +49,7 @@ describe('IntakeWhiteLabelStyle', () => {
     expect(css).toContain('--intake-secondary-fg:#073b4c')
   })
 
-  it('keeps the default Credicarro gradient without a white label', () => {
+  it('keeps the default brand gradient without a white label', () => {
     const { container } = render(<IntakeWhiteLabelStyle whiteLabel={null} />)
 
     expect(styles(container)).toEqual([])

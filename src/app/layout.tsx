@@ -26,7 +26,7 @@ const archivo = Archivo({
 })
 
 export const metadata: Metadata = {
-  title: 'Proposta | Credicarro',
+  title: 'Pedido | Parcele Mais',
   robots: { index: false, follow: false },
 }
 
@@ -48,7 +48,7 @@ export default function RootLayout({
     <html
       lang='pt-BR'
       className={`${roboto.variable} ${archivo.variable}`}
-      data-brand='credicarro'
+      data-brand='parcelemais'
       data-mode='light'
     >
       <body className='flex min-h-dvh flex-col font-text'>

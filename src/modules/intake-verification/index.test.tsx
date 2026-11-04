@@ -57,7 +57,7 @@ describe('IntakeVerification', () => {
       screen.getByRole('button', { name: 'Receber código via Whatsapp' }),
     ).toBeEnabled()
     expect(
-      screen.getByRole('button', { name: 'Acessar proposta' }),
+      screen.getByRole('button', { name: 'Acessar pedido' }),
     ).toBeDisabled()
   })
 
@@ -82,7 +82,7 @@ describe('IntakeVerification', () => {
         'true',
       )
       expect(
-        screen.getByRole('button', { name: 'Acessar proposta' }),
+        screen.getByRole('button', { name: 'Acessar pedido' }),
       ).toBeEnabled()
     },
   )
@@ -177,7 +177,7 @@ describe('IntakeVerification', () => {
       await screen.findByLabelText('Código de verificação'),
       '123456',
     )
-    await user.click(screen.getByRole('button', { name: 'Acessar proposta' }))
+    await user.click(screen.getByRole('button', { name: 'Acessar pedido' }))
 
     await waitFor(() =>
       expect(intakeService.verifyToken).toHaveBeenCalledWith('abc', {
@@ -204,7 +204,7 @@ describe('IntakeVerification', () => {
       await screen.findByLabelText('Código de verificação'),
       '123456',
     )
-    await user.click(screen.getByRole('button', { name: 'Acessar proposta' }))
+    await user.click(screen.getByRole('button', { name: 'Acessar pedido' }))
 
     expect(
       await screen.findByText('Código inválido ou expirado.'),
@@ -226,7 +226,7 @@ describe('IntakeVerification', () => {
       await screen.findByLabelText('Código de verificação'),
       '123456',
     )
-    await user.click(screen.getByRole('button', { name: 'Acessar proposta' }))
+    await user.click(screen.getByRole('button', { name: 'Acessar pedido' }))
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(

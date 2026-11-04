@@ -45,7 +45,7 @@ Front do fluxo de criação de proposta via WhatsApp (Parcele Mais / Cartão Sim
 - Tempo real: `IntakeRealtimeProvider` (montado no layout do link quando há sessão) conecta no hub do SignalR com ticket novo a cada conexão, sem `withAutomaticReconnect`. As telas leem `useIntakeRealtime().isConnected` para fazer polling só quando desconectadas.
 - Páginas de etapa chamam `requireActiveIntakeStep` (sem cookie → verificação; fora da etapa ativa → etapa ativa). Mapa status → rota em `common/records/intake-step-route.record.ts`.
 - Fluxos (comprador financiamento, comprador empréstimo, vendedor): `getIntakeFlow` + textos em `common/records/intake-flow-copy.record.ts`.
-- Contrato da API: guia do backend CAR-1879 (resumo no README). HMAC só em `start`/`send-code`/`verify-code` (`common/lib/hmac.ts`); 401/403 nas rotas de etapa apaga o cookie (`toBffStepResponse`).
+- Contrato da API: guia do backend CAR-1879. HMAC só em `start`/`send-code`/`verify-code` (`common/lib/hmac.ts`); 401/403 nas rotas de etapa apaga o cookie (`toBffStepResponse`).
 - Documentos: requisitos e status vêm do `intake/documents/required` (alternativas viram abas no modal); conversão em `common/utils/get-intake-documents.ts`.
 - Cada etapa é um módulo `modules/intake-<etapa>`; `modules/intake-step` escolhe a tela pela rota e carrega os dados no servidor (`getIntakeStepData`, montado a partir do start).
 - Ilustrações dos títulos e seus recortes do Figma: `constants/illustrations.ts`.

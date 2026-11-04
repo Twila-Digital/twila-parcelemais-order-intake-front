@@ -1,0 +1,45 @@
+#!/bin/sh
+
+echo ""
+echo "🚀 Running pre-push checks..."
+echo ""
+echo "📌 Pre-push ensures the codebase is stable before sharing it."
+echo "📌 This step runs broader checks than pre-commit."
+echo ""
+
+# -------------------------
+# Biome (full project)
+# -------------------------
+echo "🔍 Running Biome (lint + format) on the full project..."
+npm run lint
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Biome check failed."
+  echo "💡 Fix the issues before pushing."
+  echo "💡 Tip: run 'npm run check' to auto-fix."
+  exit 1
+fi
+
+echo "✅ Biome check passed."
+echo ""
+
+# -------------------------
+# Unit tests (Vitest)
+# -------------------------
+echo "🧪 Running unit tests..."
+npx vitest run
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Unit tests failed."
+  echo "💡 Fix the failing tests before pushing."
+  exit 1
+fi
+
+echo "✅ Unit tests passed."
+echo ""
+
+echo "🎉 Pre-push checks passed successfully!"
+echo "📦 Your branch is ready to be pushed."
+echo ""

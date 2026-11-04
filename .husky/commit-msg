@@ -1,0 +1,45 @@
+#!/bin/sh
+
+echo ""
+echo "📝 Validating commit message..."
+echo ""
+echo "📌 This project follows Conventional Commits."
+echo "📌 Use ONE of the following commit types:"
+echo ""
+echo "  feat:       A new feature"
+echo "  fix:        A bug fix"
+echo "  docs:       Documentation only changes"
+echo "  style:      Changes that do not affect the meaning of the code"
+echo "              (white-space, formatting, missing semi-colons, etc)"
+echo "  refactor:   A code change that neither fixes a bug nor adds a feature"
+echo "  perf:       A code change that improves performance"
+echo "  test:       Adding missing tests or correcting existing tests"
+echo "  build:      Changes that affect the build system or external dependencies"
+echo "              (npm, webpack, vite, next, etc)"
+echo "  ci:         Changes to CI configuration files and scripts"
+echo "  chore:      Other changes that don't modify src or test files"
+echo "  revert:     Reverts a previous commit"
+echo ""
+echo "📌 Commit message format:"
+echo "  <type>(optional-scope): <short description>"
+echo ""
+echo "📌 Examples:"
+echo "  feat(auth): add Google login"
+echo "  fix(profile): prevent crash on empty avatar"
+echo "  refactor(api): simplify request handler"
+echo "  chore(deps): update dependencies"
+echo ""
+
+npx --no -- commitlint --edit "$1"
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Invalid commit message."
+  echo "💡 Please follow the Conventional Commits format shown above."
+  echo "💡 Example: feat(dashboard): add revenue chart"
+  exit 1
+fi
+
+echo ""
+echo "✅ Commit message is valid."
+echo "🎉 Thank you for keeping a clean and readable git history!"

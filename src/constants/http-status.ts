@@ -1,0 +1,21 @@
+export const HTTP_STATUS = {
+  NO_CONTENT: 204,
+  SEE_OTHER: 303,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  GONE: 410,
+  TOO_MANY_REQUESTS: 429,
+  BAD_GATEWAY: 502,
+} as const
+
+export const SESSION_ERROR_STATUSES: ReadonlySet<number> = new Set([
+  HTTP_STATUS.UNAUTHORIZED,
+  HTTP_STATUS.FORBIDDEN,
+])
+
+export const CLOSED_LINK_STATUSES: ReadonlySet<number> = new Set([
+  HTTP_STATUS.NOT_FOUND,
+  HTTP_STATUS.GONE,
+])

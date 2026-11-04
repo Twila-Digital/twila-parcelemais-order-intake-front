@@ -1,0 +1,101 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - |
+          set -Eeuo pipefail
+          if [ -z "${AWS_APP_ID:-}" ]; then
+            echo "❌ AWS_APP_ID não definido no ambiente do build."
+            exit 1
+          fi
+          PARAM="/amplify/shared/${AWS_APP_ID}/PACKAGES_TOKEN"
+          if ! PACKAGES_TOKEN=$(aws ssm get-parameter \
+                --name "$PARAM" \
+                --with-decryption \
+                --query Parameter.Value \
+                --output text \
+                --region "${AWS_REGION:-us-east-1}"); then
+            echo "❌ PACKAGES_TOKEN não encontrado em $PARAM"
+            echo "   O pipeline (_deploy.yaml) cria esse parâmetro antes do start-job."
+            echo "   Se o build foi disparado manualmente, rode um deploy pelo pipeline ou crie o parâmetro na conta."
+            exit 1
+          fi
+          env "npm_config_//npm.pkg.github.com/:_authToken=${PACKAGES_TOKEN}" \
+            npm ci --cache .npm --prefer-offline
+    build:
+      commands:
+        # Fail fast + logs úteis
+        - set -Eeuo pipefail
+        - echo "AWS_BRANCH=$AWS_BRANCH  AWS_REGION=${AWS_REGION:-N/A}"
+        - aws --version
+        - aws sts get-caller-identity || true
+
+        # Prefixo do SSM por branch
+        - |
+          case "$AWS_BRANCH" in
+            # TODO(infra): trocar pelos IDs dos apps Amplify deste projeto.
+            production) SSM_PREFIX="/amplify/shared/<AMPLIFY_APP_ID_PRODUCTION>" ;;
+            *)          SSM_PREFIX="/amplify/shared/dasjl81bjfak" ;;
+          esac
+          export SSM_PREFIX
+          echo "🔧 Using SSM prefix: $SSM_PREFIX"
+
+        # Versão do app
+        - |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          COMMIT_ID=$(git rev-parse --short=7 HEAD)
+          echo "NEXT_PUBLIC_APP_VERSION=${PKG_VERSION}-${AWS_BRANCH}-${COMMIT_ID}" >> .env
+          echo "📦 App Version: ${PKG_VERSION}-${AWS_BRANCH}-${COMMIT_ID}"
+
+        # (Opcional) listar o que existe no caminho do SSM - nomes, sem valores
+        - |
+          echo "🔎 Parameters under $SSM_PREFIX:"
+          aws ssm get-parameters-by-path \
+            --path "$SSM_PREFIX" --recursive --with-decryption \
+            --query "Parameters[].Name" --output text --region "$AWS_REGION" || true
+
+        # Carregar segredos do SSM (SSM > Amplify env). Se não achar no SSM, usa valor do ambiente.
+        - |
+          echo "🔐 Loading secrets..."
+          SECRETS=(
+            INTAKE_HMAC_SECRET
+            DATADOG_APP_ID
+            DATADOG_CLIENT_TOKEN
+          )
+
+          for NAME in "${SECRETS[@]}"; do
+            if VAL=$(aws ssm get-parameter \
+                --name "${SSM_PREFIX}/${NAME}" \
+                --with-decryption \
+                --query "Parameter.Value" \
+                --output text \
+                --region "$AWS_REGION"); then
+              echo "✅ ${NAME} loaded from SSM"
+              export "${NAME}=${VAL}"
+              printf '%s=%s\n' "$NAME" "$VAL" >> .env
+            else
+              if [[ -n "${!NAME:-}" ]]; then
+                echo "ℹ️  ${NAME} not in SSM; using Amplify env value"
+                printf '%s=%s\n' "$NAME" "${!NAME}" >> .env
+              else
+                echo "⚠️  ${NAME} missing in SSM and environment"
+              fi
+            fi
+          done
+
+        # (Opcional) também propagar outras variáveis já presentes no ambiente
+        - |
+          echo "🔁 Propagating remaining env vars..."
+          env | grep -E '^(NEXT_PUBLIC_|NEXT_REQUEST_TIMEOUT|API_URL=)' >> .env || true
+
+        # Build
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - .next/cache/**/*
+      - .npm/**/*

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+echo "🔍 Running pre-commit checks..."
+echo "📌 This project follows React + Next.js (App Router) best practices."
+echo "📌 Biome is used to catch potential bugs, bad patterns, and enforce formatting."
+echo ""
+
+echo "🚀 Running lint-staged on changed files..."
+npx lint-staged
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Pre-commit checks failed."
+  echo "💡 Fix the issues above before committing."
+  echo "💡 Tip: Run 'npm run lint' or 'npm run check' locally."
+  exit 1
+fi
+
+echo ""
+echo "✅ Pre-commit checks passed."
+echo "🎉 Your code is clean and ready to be committed."

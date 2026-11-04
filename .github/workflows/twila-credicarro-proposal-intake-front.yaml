@@ -1,0 +1,29 @@
+name: Twila Credicarro Proposal Intake Front
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - production
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  id-token: write
+  contents: read
+  issues: write
+  pull-requests: write
+  packages: read
+
+jobs:
+  call-workflow:
+    uses: Twila-Digital/twila-front-pipelines/.github/workflows/workflow_amplify.yaml@production
+    with:
+      staging-aws: '637863125229'
+      production-aws: '795110380808'
+      product: credicarro
+      service-name: proposal-intake-front
+    secrets:
+      packages-token: ${{ secrets.PACKAGES_TOKEN }}
+      app-id: ${{ secrets.APP_ID }}
+      app-private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      e2e-dotenv: ${{ secrets.E2E_DOTENV }}

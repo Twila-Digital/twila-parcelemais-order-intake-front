@@ -1,0 +1,45 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# debug
+# dependencies
+# local env files
+# misc
+# next.js
+# playwright-mcp
+# production
+# testing
+# typescript
+# vercel
+*.pem
+*.tsbuildinfo
+.DS_Store
+.env*.local
+.playwright-mcp
+.pnp.js
+.vercel
+.yarn/install-state.gz
+/.next/
+/.pnp
+/build
+/coverage
+/node_modules
+/out/
+next-env.d.ts
+node_modules/
+npm-debug.log*
+terraform/.terraform.lock.hcl
+terraform/.terraform/
+terraform/modules/
+yarn-debug.log*
+yarn-error.log*
+
+# playwright e2e
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/.auth/
+.last-run.json
+
+!e2e/.env.ci
+!e2e/.env.secret-keys

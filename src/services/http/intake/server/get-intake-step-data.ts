@@ -1,37 +1,19 @@
 import 'server-only'
 import { cache } from 'react'
 import { IntakeErrorType } from '@/common/enums/intake-error-type.enum'
-import { IntakeParticipant } from '@/common/enums/intake-participant.enum'
 import { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 import { logError } from '@/common/lib/datadog-server-logger'
-import { getIntakeDocuments } from '@/common/utils/get-intake-documents'
-import type {
-  IntakeBank,
-  IntakeBiometryStepData,
-  IntakeDepositAccountStepData,
-  IntakeDocumentsStepData,
-  IntakeHolderDocumentType,
-  IntakeNotifySellerStepData,
-  IntakeStartResponse,
-} from '@/domain/intake.domain'
-import type { IntakeApiRequiredDocuments } from '@/domain/intake-api.domain'
-import { getIntakeStart } from './get-intake-start'
+import type { IntakeBiometryStepData } from '@/domain/intake.domain'
 import { intakeServerFetch } from './intake-server-fetch'
 import { getIntakeAccessToken } from './intake-session'
 
 export type IntakeStepDataByStatus = {
-  [IntakeStepStatus.NotifySeller]: IntakeNotifySellerStepData
-  [IntakeStepStatus.IncludeDepositAccount]: IntakeDepositAccountStepData
-  [IntakeStepStatus.IncludeDocument]: IntakeDocumentsStepData
   [IntakeStepStatus.AnalyseBiometric]: IntakeBiometryStepData
 }
 
 export type IntakeStepWithData = keyof IntakeStepDataByStatus
 
 const STEPS_WITH_DATA = new Set<IntakeStepStatus>([
-  IntakeStepStatus.NotifySeller,
-  IntakeStepStatus.IncludeDepositAccount,
-  IntakeStepStatus.IncludeDocument,
   IntakeStepStatus.AnalyseBiometric,
 ])
 
@@ -48,17 +30,11 @@ const BIOMETRY_NOT_AVAILABLE: IntakeBiometryStepData = {
   isAvailable: false,
 }
 
-async function fetchFromApi<T>(
-  token: string,
-  path: string,
-  { withSession = true }: { withSession?: boolean } = {},
-) {
+async function fetchFromApi<T>(token: string, path: string) {
   const accessToken = await getIntakeAccessToken(token)
   if (!accessToken) return null
 
-  const response = await intakeServerFetch<T>(token, path, {
-    accessToken: withSession ? accessToken : null,
-  })
+  const response = await intakeServerFetch<T>(token, path, { accessToken })
   if (!response.ok) {
     logError('[Intake] Unexpected step data response', {
       http_status: response.status,
@@ -69,50 +45,11 @@ async function fetchFromApi<T>(
   return response
 }
 
-function getHolderDocumentType({
-  participant,
-  dateAndStatus,
-}: IntakeStartResponse): IntakeHolderDocumentType {
-  const isStore =
-    participant === IntakeParticipant.Seller &&
-    Boolean(
-      dateAndStatus?.steps.some(
-        (step) => step.status === IntakeStepStatus.IncludeEstablishmentDetails,
-      ),
-    )
-  return isStore ? 'Cnpj' : 'Cpf'
-}
-
 async function loadStepData(
   token: string,
   status: IntakeStepWithData,
-  start: IntakeStartResponse,
 ): Promise<IntakeStepDataByStatus[typeof status] | null> {
   switch (status) {
-    case IntakeStepStatus.NotifySeller:
-      return { sellerLink: start.sellerLink ?? null }
-    case IntakeStepStatus.IncludeDepositAccount: {
-      const response = await fetchFromApi<IntakeBank[]>(token, 'intake/banks', {
-        withSession: false,
-      })
-      return response?.ok
-        ? {
-            banks: response.data,
-            holderDocumentType: getHolderDocumentType(start),
-          }
-        : null
-    }
-    case IntakeStepStatus.IncludeDocument: {
-      const response = await fetchFromApi<IntakeApiRequiredDocuments>(
-        token,
-        'intake/documents/required',
-      )
-      if (!response?.ok) return null
-      const step = start.dateAndStatus?.steps.find(
-        (item) => item.status === IntakeStepStatus.IncludeDocument,
-      )
-      return getIntakeDocuments(response.data, step?.pendencies ?? [])
-    }
     case IntakeStepStatus.AnalyseBiometric: {
       const response = await fetchFromApi<IntakeBiometryStepData>(
         token,
@@ -132,9 +69,7 @@ export const getIntakeStepData = cache(
     status: S,
   ): Promise<IntakeStepDataByStatus[S] | null> => {
     try {
-      const start = await getIntakeStart(token)
-      if (!start.ok) return null
-      return (await loadStepData(token, status, start.data)) as
+      return (await loadStepData(token, status)) as
         | IntakeStepDataByStatus[S]
         | null
     } catch (error) {

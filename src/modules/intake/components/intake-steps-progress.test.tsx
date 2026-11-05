@@ -4,22 +4,26 @@ import { describe, expect, it } from 'vitest'
 import { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 import { IntakeStepsProgress } from './intake-steps-progress'
 
+// O enum só tem as etapas com tela; as demais chegam da API como texto
+const IDENTITY_CHECK = 'IdentityCheck' as IntakeStepStatus
+const PAYMENT = 'Payment' as IntakeStepStatus
+
 const steps = [
   {
-    status: IntakeStepStatus.NotifySeller,
-    description: 'Dados do vendedor',
+    status: IDENTITY_CHECK,
+    description: 'Dados pessoais',
     isCompleted: true,
     completedAt: '2026-10-16T14:42:09.0193699+00:00',
   },
   {
-    status: IntakeStepStatus.IncludeDocument,
-    description: 'Documentos',
+    status: IntakeStepStatus.AnalyseBiometric,
+    description: 'Biometria e assinatura',
     isCompleted: false,
     completedAt: null,
   },
   {
-    status: IntakeStepStatus.AnalyseBiometric,
-    description: 'Biometria e assinatura',
+    status: PAYMENT,
+    description: 'Pagamento',
     isCompleted: false,
     completedAt: null,
   },
@@ -29,7 +33,7 @@ async function openSteps() {
   render(
     <IntakeStepsProgress
       steps={steps}
-      activeStatus={IntakeStepStatus.IncludeDocument}
+      activeStatus={IntakeStepStatus.AnalyseBiometric}
     />,
   )
   await userEvent.click(screen.getByRole('button', { name: 'Ver etapas' }))
@@ -41,11 +45,11 @@ describe('IntakeStepsProgress', () => {
     render(
       <IntakeStepsProgress
         steps={steps}
-        activeStatus={IntakeStepStatus.IncludeDocument}
+        activeStatus={IntakeStepStatus.AnalyseBiometric}
       />,
     )
 
-    expect(screen.getByText('Documentos')).toBeInTheDocument()
+    expect(screen.getByText('Biometria e assinatura')).toBeInTheDocument()
     const toggle = screen.getByRole('button', { name: 'Ver etapas' })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
 
@@ -60,7 +64,7 @@ describe('IntakeStepsProgress', () => {
     const list = await openSteps()
 
     const [completed] = list.getAllByRole('listitem')
-    expect(completed).toHaveTextContent('Dados do vendedor')
+    expect(completed).toHaveTextContent('Dados pessoais')
     expect(completed).toHaveTextContent('(concluída)')
     expect(completed).toHaveTextContent('16/10/2026 11:42')
   })

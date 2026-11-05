@@ -1,9 +1,5 @@
 import { IntakeErrorType } from '@/common/enums/intake-error-type.enum'
 import type {
-  IntakeConfirmDocumentRequest,
-  IntakeCounterProposalDecisionRequest,
-  IntakeDocumentUploadUrlRequest,
-  IntakeDocumentUploadUrlResponse,
   IntakeProposalSummary,
   IntakeRealtimeConnection,
   IntakeSendTokenRequest,
@@ -21,18 +17,6 @@ type IIntakeService = {
   getRealtimeConnection(token: string): Promise<IntakeRealtimeConnection>
   getStepData<T>(token: string, stepPath: string): Promise<T>
   submitStep(token: string, stepPath: string, body: object): Promise<void>
-  getDocumentUploadUrl(
-    token: string,
-    body: IntakeDocumentUploadUrlRequest,
-  ): Promise<IntakeDocumentUploadUrlResponse>
-  confirmDocument(
-    token: string,
-    body: IntakeConfirmDocumentRequest,
-  ): Promise<void>
-  decideCounterProposal(
-    token: string,
-    body: IntakeCounterProposalDecisionRequest,
-  ): Promise<void>
 }
 
 export class IntakeService implements IIntakeService {
@@ -108,37 +92,6 @@ export class IntakeService implements IIntakeService {
   async submitStep(token: string, stepPath: string, body: object) {
     await this.request<void>({
       url: this.tokenUrl(token, `steps/${stepPath}`),
-      method: 'post',
-      body,
-    })
-  }
-
-  async getDocumentUploadUrl(
-    token: string,
-    body: IntakeDocumentUploadUrlRequest,
-  ) {
-    const response = await this.request<IntakeDocumentUploadUrlResponse>({
-      url: this.tokenUrl(token, 'documentos/upload-url'),
-      method: 'post',
-      body,
-    })
-    return response.data
-  }
-
-  async confirmDocument(token: string, body: IntakeConfirmDocumentRequest) {
-    await this.request<void>({
-      url: this.tokenUrl(token, 'documentos'),
-      method: 'post',
-      body,
-    })
-  }
-
-  async decideCounterProposal(
-    token: string,
-    body: IntakeCounterProposalDecisionRequest,
-  ) {
-    await this.request<void>({
-      url: this.tokenUrl(token, 'new-conditions/decision'),
       method: 'post',
       body,
     })

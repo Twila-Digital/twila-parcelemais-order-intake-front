@@ -19,8 +19,6 @@ export function IntakeProposalCard({ summary }: IntakeProposalCardProps) {
   const createdAt = formatBrazilianDate(summary.createdAt)
 
   const details = [
-    ['Valor do veículo', formatCurrencyBRL(summary.vehicleValue)],
-    ['Valor da entrada', formatCurrencyBRL(summary.downPaymentValue)],
     ['Valor financiado', formatCurrencyBRL(summary.financedValue)],
     [
       'Parcelas',
@@ -34,20 +32,15 @@ export function IntakeProposalCard({ summary }: IntakeProposalCardProps) {
       className='flex flex-col gap-lg rounded-sm border border-gray-3 bg-white p-md'
     >
       <div className='flex items-center gap-sm'>
-        <div className='flex flex-1 flex-col gap-xs'>
-          <div className='flex items-center justify-between gap-sm'>
-            <p className='font-semibold tablet:font-medium tablet:text-body-16 text-body-14'>
-              Proposta {summary.proposalNumber}
-            </p>
-            {createdAt && (
-              <p className='whitespace-nowrap text-body-12 text-gray-9'>
-                {createdAt}
-              </p>
-            )}
-          </div>
-          <p className='tablet:text-body-14 text-body-12 text-gray-11'>
-            {summary.vehicleDescription}
+        <div className='flex flex-1 items-center justify-between gap-sm'>
+          <p className='font-semibold tablet:font-medium tablet:text-body-16 text-body-14'>
+            Proposta {summary.proposalNumber}
           </p>
+          {createdAt && (
+            <p className='whitespace-nowrap text-body-12 text-gray-9'>
+              {createdAt}
+            </p>
+          )}
         </div>
         <button
           type='button'

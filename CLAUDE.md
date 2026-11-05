@@ -44,9 +44,8 @@ Front do fluxo de criação de pedido via WhatsApp (Parcele Mais / Cartão Simpl
 - Verificação: a pessoa escolhe SMS ou WhatsApp (sem digitar o celular) → `intake/send-code` → `intake/verify-code`. O `accessToken` fica em cookie httpOnly por link (`services/http/intake/server/intake-session.ts`). Só a rota `realtime/ticket` o entrega ao browser, porque o gateway exige o token na URL do hub; nenhuma outra rota pode devolvê-lo.
 - Tempo real: `IntakeRealtimeProvider` (montado no layout do link quando há sessão) conecta no hub do SignalR com ticket novo a cada conexão, sem `withAutomaticReconnect`. As telas leem `useIntakeRealtime().isConnected` para fazer polling só quando desconectadas.
 - Páginas de etapa chamam `requireActiveIntakeStep` (sem cookie → verificação; fora da etapa ativa → etapa ativa). Mapa status → rota em `common/records/intake-step-route.record.ts`.
-- Fluxos (comprador financiamento, comprador empréstimo, vendedor): `getIntakeFlow` + textos em `common/records/intake-flow-copy.record.ts`.
+- Fluxo único (sem papéis nem tipos de proposta): textos das telas em `common/records/intake-flow-copy.record.ts`.
 - Contrato da API: guia do backend CAR-1879. HMAC só em `start`/`send-code`/`verify-code` (`common/lib/hmac.ts`); 401/403 nas rotas de etapa apaga o cookie (`toBffStepResponse`).
-- Documentos: requisitos e status vêm do `intake/documents/required` (alternativas viram abas no modal); conversão em `common/utils/get-intake-documents.ts`.
-- Cada etapa é um módulo `modules/intake-<etapa>`; `modules/intake-step` escolhe a tela pela rota e carrega os dados no servidor (`getIntakeStepData`, montado a partir do start).
+- Cada etapa é um módulo `modules/intake-<etapa>`; `modules/intake-step` escolhe a tela pela rota e carrega os dados no servidor (`getIntakeStepData`).
 - Ilustrações dos títulos e seus recortes do Figma: `constants/illustrations.ts`.
 - Pendências com o backend e produto ficam no README (seção "Pendências com backend/produto"), não em comentários no código.

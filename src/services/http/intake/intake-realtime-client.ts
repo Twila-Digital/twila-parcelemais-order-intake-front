@@ -21,7 +21,6 @@ const UPDATE_METHOD = 'IntakeUpdated'
 const PROPOSAL_STATUS_CHANGED = 'ProposalStatusChanged'
 
 const OPEN_PROPOSAL_STATUSES: ReadonlySet<string | null | undefined> = new Set([
-  IntakeProposalStatus.InNegotiation,
   IntakeProposalStatus.Analysing,
   IntakeProposalStatus.Approved,
 ])

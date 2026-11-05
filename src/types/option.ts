@@ -4,5 +4,3 @@ export interface Option {
   label: string
   extraLabel?: string
 }
-
-export type MapOptions = Map<string | number, Option>

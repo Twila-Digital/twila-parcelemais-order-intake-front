@@ -30,6 +30,7 @@ export const ufOptions: Map<string, Option> = new Map([
   ['TO', { value: 'TO', label: 'TO' }],
 ])
 
+/** @public reservado para as próximas etapas */
 export const ufItems = Array.from(ufOptions.values()).map((option) => ({
   label: option.label,
   value: String(option.value),

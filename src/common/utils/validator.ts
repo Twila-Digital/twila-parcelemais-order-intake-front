@@ -1,8 +1,5 @@
 import { ufOptions } from '@/common/options/uf'
 
-export const CNPJ_REGEX =
-  /^[A-Z\d]{2}\.[A-Z\d]{3}\.[A-Z\d]{3}\/[A-Z\d]{4}-\d{2}$/
-
 export const ZIP_CODE_REGEX = /^\d{5}-?\d{3}$/
 
 export const PERSON_NAME_REGEX =

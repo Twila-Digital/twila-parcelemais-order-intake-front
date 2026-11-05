@@ -4,5 +4,15 @@
   "ignoreExportsUsedInFile": true,
   "rules": {
     "enumMembers": "off"
-  }
+  },
+  "ignore": [
+    "src/config/feature-flags/keys.ts",
+    "src/config/feature-flags/use-flag-context.ts",
+    "src/common/components/masked-input.tsx",
+    "src/common/utils/combobox-value.ts",
+    "src/common/utils/digits.ts",
+    "src/services/fetch-client.ts",
+    "src/modules/intake/hooks/use-intake-step-submit.ts"
+  ],
+  "ignoreDependencies": ["imask", "react-imask"]
 }

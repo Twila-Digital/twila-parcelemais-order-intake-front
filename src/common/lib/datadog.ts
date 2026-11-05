@@ -40,10 +40,3 @@ export function logRenderError(
     digest: error.digest,
   })
 }
-
-export function clearDatadogUser() {
-  if (env.NEXT_PUBLIC_ENVIRONMENT === 'production') {
-    datadogRum.clearUser()
-    datadogLogs.clearUser()
-  }
-}

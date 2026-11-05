@@ -8,4 +8,5 @@ export const tv: typeof originalTv = (config, options?) => {
   })
 }
 
+/** @public reservado para as próximas etapas */
 export type { VariantProps } from 'tailwind-variants'

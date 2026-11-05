@@ -35,10 +35,10 @@ describe('IntakeBiometrics', () => {
     renderScreen()
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Fazer biometria e assinar' }),
+      screen.getByRole('button', { name: 'Fazer biometria' }),
     )
 
-    const iframe = screen.getByTitle('Biometria e assinatura')
+    const iframe = screen.getByTitle('Biometria')
     expect(iframe).toHaveAttribute('src', SESSION.sessionUrl)
     expect(iframe.parentElement).toHaveClass('fixed', 'inset-0')
     expect(document.body.style.overflow).toBe('hidden')
@@ -48,9 +48,9 @@ describe('IntakeBiometrics', () => {
   it('closes the Didit session when the verification is reproved', async () => {
     const { queryClient } = renderScreen()
     await userEvent.click(
-      screen.getByRole('button', { name: 'Fazer biometria e assinar' }),
+      screen.getByRole('button', { name: 'Fazer biometria' }),
     )
-    expect(screen.getByTitle('Biometria e assinatura')).toBeInTheDocument()
+    expect(screen.getByTitle('Biometria')).toBeInTheDocument()
 
     act(() =>
       queryClient.setQueryData(['intake-step-data', 'abc', 'biometrics'], {
@@ -62,9 +62,7 @@ describe('IntakeBiometrics', () => {
     expect(
       await screen.findByText('Sua verificação não foi aprovada'),
     ).toBeInTheDocument()
-    expect(
-      screen.queryByTitle('Biometria e assinatura'),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTitle('Biometria')).not.toBeInTheDocument()
   })
 
   it('offers a new attempt after a reproved verification', () => {

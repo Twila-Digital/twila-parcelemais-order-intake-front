@@ -132,8 +132,8 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
     >
       <div className='flex flex-col gap-lg tablet:gap-xxl'>
         <PageTitle
-          title='Acesse seu pedido'
-          description='Escolha como quer receber o código de acesso.'
+          title='Confirme que é você'
+          description='Para proteger seus dados, vamos enviar um código para o seu celular. Como prefere receber?'
           illustration={ILLUSTRATIONS.phone}
         />
 
@@ -155,9 +155,9 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
         {isCodeStage && (
           <section className='flex flex-col gap-lg' aria-live='polite'>
             <div className='flex flex-col gap-sm'>
-              <h2 className='font-medium text-body-18'>Confirme seu celular</h2>
+              <h2 className='font-medium text-body-18'>Digite o código</h2>
               <p className='tablet:text-body-16 text-body-14 text-gray-11'>
-                Digite o código de 6 dígitos que enviamos para o seu celular.
+                Enviamos um código de 6 dígitos para o seu celular.
               </p>
             </div>
 
@@ -215,7 +215,7 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
         disabled={!isCodeStage}
         loading={verifyToken.isPending || isRedirecting}
       >
-        Acessar pedido
+        Confirmar código
       </Button>
     </form>
   )

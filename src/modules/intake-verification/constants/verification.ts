@@ -13,7 +13,7 @@ export const VERIFICATION_CHANNELS: {
   icon: IconDefinition
 }[] = [
   { value: 'sms', label: 'Receber código via SMS', icon: faMessageDots },
-  { value: 'wpp', label: 'Receber código via Whatsapp', icon: faWhatsapp },
+  { value: 'wpp', label: 'Receber código via WhatsApp', icon: faWhatsapp },
 ]
 
 export const CODE_RESENT_TOAST = {

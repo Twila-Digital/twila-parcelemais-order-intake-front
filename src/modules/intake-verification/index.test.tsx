@@ -54,16 +54,16 @@ describe('IntakeVerification', () => {
       screen.getByRole('button', { name: 'Receber código via SMS' }),
     ).toHaveAttribute('aria-pressed', 'false')
     expect(
-      screen.getByRole('button', { name: 'Receber código via Whatsapp' }),
+      screen.getByRole('button', { name: 'Receber código via WhatsApp' }),
     ).toBeEnabled()
     expect(
-      screen.getByRole('button', { name: 'Acessar pedido' }),
+      screen.getByRole('button', { name: 'Confirmar código' }),
     ).toBeDisabled()
   })
 
   it.each([
     ['Receber código via SMS', 'sms'],
-    ['Receber código via Whatsapp', 'wpp'],
+    ['Receber código via WhatsApp', 'wpp'],
   ])(
     'sends the code through the chosen channel (%s)',
     async (label, channel) => {
@@ -82,7 +82,7 @@ describe('IntakeVerification', () => {
         'true',
       )
       expect(
-        screen.getByRole('button', { name: 'Acessar pedido' }),
+        screen.getByRole('button', { name: 'Confirmar código' }),
       ).toBeEnabled()
     },
   )
@@ -95,7 +95,7 @@ describe('IntakeVerification', () => {
       screen.getByRole('button', { name: 'Receber código via SMS' }),
     ).toBeDisabled()
     expect(
-      screen.getByRole('button', { name: 'Receber código via Whatsapp' }),
+      screen.getByRole('button', { name: 'Receber código via WhatsApp' }),
     ).toBeDisabled()
   })
 
@@ -121,7 +121,7 @@ describe('IntakeVerification', () => {
 
     await act(() => vi.advanceTimersByTimeAsync(61_000))
     await user.click(
-      screen.getByRole('button', { name: 'Receber código via Whatsapp' }),
+      screen.getByRole('button', { name: 'Receber código via WhatsApp' }),
     )
     vi.useRealTimers()
 
@@ -137,7 +137,7 @@ describe('IntakeVerification', () => {
 
   it('confirms with a toast only when the code is resent', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
-    const user = await chooseChannel('Receber código via Whatsapp')
+    const user = await chooseChannel('Receber código via WhatsApp')
     await screen.findByLabelText('Código de verificação')
     expect(toast.success).not.toHaveBeenCalled()
 
@@ -177,7 +177,7 @@ describe('IntakeVerification', () => {
       await screen.findByLabelText('Código de verificação'),
       '123456',
     )
-    await user.click(screen.getByRole('button', { name: 'Acessar pedido' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmar código' }))
 
     await waitFor(() =>
       expect(intakeService.verifyToken).toHaveBeenCalledWith('abc', {
@@ -204,7 +204,7 @@ describe('IntakeVerification', () => {
       await screen.findByLabelText('Código de verificação'),
       '123456',
     )
-    await user.click(screen.getByRole('button', { name: 'Acessar pedido' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmar código' }))
 
     expect(
       await screen.findByText('Código inválido ou expirado.'),
@@ -226,7 +226,7 @@ describe('IntakeVerification', () => {
       await screen.findByLabelText('Código de verificação'),
       '123456',
     )
-    await user.click(screen.getByRole('button', { name: 'Acessar pedido' }))
+    await user.click(screen.getByRole('button', { name: 'Confirmar código' }))
 
     await waitFor(() =>
       expect(toast.error).toHaveBeenCalledWith(

@@ -10,7 +10,7 @@ const API_BASE_PATH = '/api/v1'
 const DEFAULT_TIMEOUT_IN_SECONDS = 30
 
 type IntakeServerFetchOptions = {
-  method?: 'GET' | 'POST'
+  method?: 'GET' | 'POST' | 'PUT'
   body?: unknown
   accessToken?: string | null
 }

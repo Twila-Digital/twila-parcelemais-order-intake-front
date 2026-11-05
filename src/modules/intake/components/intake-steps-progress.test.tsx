@@ -37,7 +37,7 @@ async function openSteps() {
     />,
   )
   await userEvent.click(screen.getByRole('button', { name: 'Ver etapas' }))
-  return within(screen.getByRole('list', { name: 'Etapas da proposta' }))
+  return within(screen.getByRole('list', { name: 'Etapas do pedido' }))
 }
 
 describe('IntakeStepsProgress', () => {

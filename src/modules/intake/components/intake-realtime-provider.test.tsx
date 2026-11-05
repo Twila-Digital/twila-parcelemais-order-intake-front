@@ -68,7 +68,7 @@ const update = (
   occurredAt = '2026-10-16T13:05:00.000Z',
 ): IntakeRealtimeUpdate => ({
   type,
-  proposalId: 'p1',
+  orderId: 'o1',
   occurredAt,
   data,
 })
@@ -148,7 +148,7 @@ describe('IntakeRealtimeProvider', () => {
     expect(router.refresh).toHaveBeenCalledTimes(1)
   })
 
-  it.each(['Payment', 'Finished'])(
+  it.each(['Purchase', null])(
     'shows the finished screen for %s',
     (activeStatus) => {
       const { options } = renderProvider()
@@ -158,7 +158,7 @@ describe('IntakeRealtimeProvider', () => {
       )
 
       expect(router.replace).toHaveBeenCalledWith(
-        '/intake/abc/proposta-finalizada',
+        '/intake/abc/pedido-concluido',
       )
     },
   )
@@ -211,7 +211,7 @@ describe('IntakeRealtimeProvider', () => {
     expect(router.refresh).toHaveBeenCalledTimes(1)
   })
 
-  it('follows the start when the proposal status changes', async () => {
+  it('follows the start when the order status changes', async () => {
     intakeService.getStart.mockResolvedValue(startWith(null))
     const { options } = renderProvider()
 
@@ -221,12 +221,10 @@ describe('IntakeRealtimeProvider', () => {
       ),
     )
 
-    expect(router.replace).toHaveBeenCalledWith(
-      '/intake/abc/proposta-finalizada',
-    )
+    expect(router.replace).toHaveBeenCalledWith('/intake/abc/pedido-concluido')
   })
 
-  it('shows the closed proposal when the link ends', () => {
+  it('shows the closed order when the link ends', () => {
     const { options } = renderProvider()
 
     act(() => options.onClosed())

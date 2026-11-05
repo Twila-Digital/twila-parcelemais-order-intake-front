@@ -26,7 +26,8 @@ Front do fluxo de criação de pedido via WhatsApp (Parcele Mais / Cartão Simpl
 - Classes condicionais: `cn()` de `@/common/lib/utils`; variantes: `tv()` de `@/common/lib/tailwind-variants`.
 - Mobile first: o usuário chega pelo WhatsApp, quase sempre no celular.
 - Loading de tela cheia: o volante do DS (`IntakeLoading`, `Loading variant='brand'`). Aparece no `loading.tsx` das rotas do intake e, no client, via `useIntakeLoading()` (ex.: ao avançar de etapa).
-- White label e contraste: cor da marca usada como texto, borda ou forma vai com `brand-primary-fg` (o DS já ajusta o contraste), nunca `brand-primary-9`. O fundo (`--intake-page-bg-to`) e o destaque da secundária (`--intake-secondary-fg`) são calculados em `IntakeWhiteLabelStyle` para manter os textos legíveis.
+- Sem white label nesta entrega: o tema é o do Parcele Mais. Cor da marca usada como texto, borda ou forma vai com `brand-primary-fg`, nunca `brand-primary-9`.
+- Não existe proposta neste projeto: é sempre **pedido** (`order`), em código e em texto.
 
 ## Dados
 
@@ -45,7 +46,7 @@ Front do fluxo de criação de pedido via WhatsApp (Parcele Mais / Cartão Simpl
 - Tempo real: `IntakeRealtimeProvider` (montado no layout do link quando há sessão) conecta no hub do SignalR com ticket novo a cada conexão, sem `withAutomaticReconnect`. As telas leem `useIntakeRealtime().isConnected` para fazer polling só quando desconectadas.
 - Páginas de etapa chamam `requireActiveIntakeStep` (sem cookie → verificação; fora da etapa ativa → etapa ativa). Mapa status → rota em `common/records/intake-step-route.record.ts`.
 - Fluxo único (sem papéis nem tipos de proposta): textos das telas em `common/records/intake-flow-copy.record.ts`.
-- Contrato da API: guia do backend CAR-1879. HMAC só em `start`/`send-code`/`verify-code` (`common/lib/hmac.ts`); 401/403 nas rotas de etapa apaga o cookie (`toBffStepResponse`).
+- Contrato da API: `swagger.json` na raiz (endpoints `/v1/intake/*`). HMAC só em `start`/`send-code`/`verify-code` (`common/lib/hmac.ts`); 401/403 nas rotas de etapa apaga o cookie (`toBffStepResponse`).
 - Cada etapa é um módulo `modules/intake-<etapa>`; `modules/intake-step` escolhe a tela pela rota e carrega os dados no servidor (`getIntakeStepData`).
 - Ilustrações dos títulos e seus recortes do Figma: `constants/illustrations.ts`.
 - Pendências com o backend e produto ficam no README (seção "Pendências com backend/produto"), não em comentários no código.

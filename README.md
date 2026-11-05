@@ -92,4 +92,25 @@ AWS Amplify, com o workflow reutilizável `twila-front-pipelines` (`.github/work
 
 ## Pendências com backend/produto
 
-Nenhuma registrada ainda.
+### Contrato das etapas (fonte: `swagger.json`, endpoints `/v1/intake/*`)
+
+O `GET intake/start` devolve `orderId`, `order { status, externalStatus }` e `dateAndStatus`, com as etapas: dados pessoais (com o consentimento da consulta de crédito), endereço, parcelas, cartão, biometria e compra. O swagger **não lista os nomes dos status** (`activeStatus` e `steps[].status` são `string`), então os de `IntakeStepStatus` ainda são **provisórios**:
+
+| Etapa | Status provisório | Rota | Path no BFF | API |
+| --- | --- | --- | --- | --- |
+| Dados pessoais | `IncludePersonalData` | `dados-pessoais` | `personal-data` | `PUT intake/profile` |
+| Endereço | `IncludeAddress` | `endereco-cobranca` | `address` | `PUT intake/address` |
+| Parcelas | `ChooseInstallments` | `parcelas` | `installments` | — |
+| Cartão | `IncludeCreditCard` | `cartao` | `credit-card` | `POST intake/payment-profile` |
+| Biometria | `AnalyseBiometric` | `biometria` | `biometrics` | `GET intake/biometry` |
+| Compra | `Purchase` | sem tela (vai para `pedido-concluido`) | `purchase` | `POST intake/sale` |
+
+- **Nomes dos status** das etapas: confirmar com o backend.
+- **Parcelas:** não há endpoint de intake para simular e escolher as parcelas (só `orders/simulate` e `orders/term`, fora do intake).
+- **Compra:** `POST intake/sale` exige o header `Idempotency-Key`; falta definir quando o front chama (ao fim da biometria?) e o BFF ainda não envia.
+- **Análise de crédito e telas finais** saem de `order.status` (mesmos valores do `OrderStatus` do backoffice do CS), depois dos dados pessoais: `Analysing` → `analise-credito`, `Approved` → `credito-aprovado` (Figma: "a loja vai iniciar sua compra"), `Canceled` → `pedido-cancelado`, `UnavailableBalance`/`NotAuthorized`/`AnalysisExpired` → `credito-negado`. Confirmar os status de recusa e qual status indica que a loja iniciou a compra (o front assume que o pedido deixa de ser `Approved` e segue pelo `activeStatus`).
+- **Tempo real:** o hub do SignalR não está no swagger. O front ainda espera `ProposalStatusChanged` (com `data.status` = status do pedido) e `orderId` no evento; confirmar os nomes.
+- **Link mágico:** `intake/access` (rota `?acesso=`) não aparece no swagger.
+- **Senha** em `PUT intake/profile`: a API exige, mas a tela 1.2 do Figma não tem campo de senha. O BFF só exige que venha preenchida.
+- **Dados pessoais (Figma 1.2):** a tela tem Nome e Sobrenome (a API tem só `name`), CPF (a API usa o do convite) e Telefone desabilitado (o start não devolve). Confirmar com o backend.
+- **Crédito negado (Figma 1.2.1):** o título no Figma é "Tudo certo!"; confirmar com produto.

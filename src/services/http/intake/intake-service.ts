@@ -1,6 +1,6 @@
 import { IntakeErrorType } from '@/common/enums/intake-error-type.enum'
 import type {
-  IntakeProposalSummary,
+  IntakeOrderSummary,
   IntakeRealtimeConnection,
   IntakeSendTokenRequest,
   IntakeStartResponse,
@@ -12,7 +12,7 @@ import type { HttpClient, RequestConfig, Response } from '@/types/http'
 type IIntakeService = {
   sendToken(token: string, body: IntakeSendTokenRequest): Promise<void>
   verifyToken(token: string, body: IntakeVerifyTokenRequest): Promise<void>
-  getProposalSummary(token: string): Promise<IntakeProposalSummary>
+  getOrderSummary(token: string): Promise<IntakeOrderSummary>
   getStart(token: string): Promise<IntakeStartResponse>
   getRealtimeConnection(token: string): Promise<IntakeRealtimeConnection>
   getStepData<T>(token: string, stepPath: string): Promise<T>
@@ -57,9 +57,9 @@ export class IntakeService implements IIntakeService {
     })
   }
 
-  async getProposalSummary(token: string) {
-    const response = await this.request<IntakeProposalSummary>({
-      url: this.tokenUrl(token, 'proposal'),
+  async getOrderSummary(token: string) {
+    const response = await this.request<IntakeOrderSummary>({
+      url: this.tokenUrl(token, 'order'),
       method: 'get',
     })
     return response.data

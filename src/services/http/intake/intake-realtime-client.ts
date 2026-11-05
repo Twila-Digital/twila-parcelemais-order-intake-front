@@ -4,7 +4,7 @@ import {
   HubConnectionBuilder,
   LogLevel,
 } from '@microsoft/signalr'
-import { IntakeProposalStatus } from '@/common/enums/intake-proposal-status.enum'
+import { isIntakeOrderClosed } from '@/common/records/intake-step-route.record'
 import {
   CLOSED_LINK_STATUSES,
   SESSION_ERROR_STATUSES,
@@ -18,12 +18,7 @@ import { hasApiErrorStatus } from '@/services/error'
 
 const HUB_PATH = '/api/signalr/intake/hub'
 const UPDATE_METHOD = 'IntakeUpdated'
-const PROPOSAL_STATUS_CHANGED = 'ProposalStatusChanged'
-
-const OPEN_PROPOSAL_STATUSES: ReadonlySet<string | null | undefined> = new Set([
-  IntakeProposalStatus.Analysing,
-  IntakeProposalStatus.Approved,
-])
+const ORDER_STATUS_CHANGED = 'ProposalStatusChanged'
 
 const RECONNECT_DELAYS_IN_MILLISECONDS = [1, 2, 5, 10].map(
   (seconds) => seconds * ONE_SECOND_IN_MILLISECONDS,
@@ -120,8 +115,8 @@ export class IntakeRealtimeClient {
 
   private handleUpdate(update: IntakeRealtimeUpdate) {
     if (
-      update.type === PROPOSAL_STATUS_CHANGED &&
-      !OPEN_PROPOSAL_STATUSES.has(update.data.status)
+      update.type === ORDER_STATUS_CHANGED &&
+      isIntakeOrderClosed(update.data.status)
     ) {
       this.close()
       return

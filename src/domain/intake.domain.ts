@@ -1,3 +1,4 @@
+import type { IntakeOrderStatus } from '@/common/enums/intake-order-status.enum'
 import type { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 
 export interface IntakeStep {
@@ -7,33 +8,19 @@ export interface IntakeStep {
   completedAt?: string | null
 }
 
-export interface IntakeWhiteLabel {
-  applied: boolean
-  logoUrl: string | null
-  colors: {
-    primary: string | null
-    secondary: string | null
-    tertiary: string | null
-  }
-  cornerStyle: {
-    code: string | null
-    buttonRadius: string | null
-    fieldRadius: string | null
-  }
-  fonts: {
-    title: string | null
-    subtitle: string | null
-  }
+export interface IntakeOrder {
+  status: IntakeOrderStatus | null
+  externalStatus: string | null
 }
 
-export interface IntakeProposalSummary {
-  proposalNumber: string
-  createdAt: string | null
-  financedValue: number
+export interface IntakeOrderSummary {
+  orderNumber: string
+  establishmentName: string | null
+  orderAmount: number
   installments: {
     count: number
     value: number
-  }
+  } | null
 }
 
 export interface IntakeDateAndStatus {
@@ -44,9 +31,9 @@ export interface IntakeDateAndStatus {
 export type IntakeUnavailableReason = 'invalid-link' | 'closed' | 'error'
 
 export interface IntakeStartResponse {
-  proposalId: string
+  orderId: string
+  order: IntakeOrder | null
   dateAndStatus: IntakeDateAndStatus | null
-  whiteLabel: IntakeWhiteLabel | null
 }
 
 export type IntakeVerificationChannel = 'sms' | 'wpp'
@@ -78,7 +65,7 @@ export type IntakeRealtimeUpdateType =
 
 export interface IntakeRealtimeUpdate {
   type: IntakeRealtimeUpdateType
-  proposalId: string
+  orderId: string
   occurredAt: string
   data: Record<string, string | null>
 }

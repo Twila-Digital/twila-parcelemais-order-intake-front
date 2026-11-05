@@ -63,7 +63,7 @@ const update = (
   data: IntakeRealtimeUpdate['data'] = {},
 ): IntakeRealtimeUpdate => ({
   type,
-  proposalId: 'p1',
+  orderId: 'o1',
   occurredAt: '2026-10-16T13:05:00.123+00:00',
   data,
 })
@@ -181,31 +181,39 @@ describe('IntakeRealtimeClient', () => {
     expect(onClosed).not.toHaveBeenCalled()
   })
 
-  it('forwards updates and closes for good when the proposal ends', async () => {
-    const getConnection = vi.fn().mockResolvedValue(ticket('t'))
-    const { client, onUpdate, onClosed } = createClient(getConnection)
+  it.each([
+    'Canceled',
+    'UnavailableBalance',
+    'NotAuthorized',
+    'AnalysisExpired',
+  ])(
+    'forwards updates and closes for good when the order moves to %s',
+    async (status) => {
+      const getConnection = vi.fn().mockResolvedValue(ticket('t'))
+      const { client, onUpdate, onClosed } = createClient(getConnection)
 
-    client.start()
-    await flush()
-    const [connection] = signalr.connections
-    const activeStatus = update('ActiveStatusChanged', {
-      activeStatus: 'AnalyseBiometric',
-    })
-    connection.handlers.IntakeUpdated(activeStatus)
-    connection.handlers.IntakeUpdated(
-      update('ProposalStatusChanged', { status: 'Canceled' }),
-    )
-    connection.closeHandler?.()
-    await vi.advanceTimersByTimeAsync(60_000)
+      client.start()
+      await flush()
+      const [connection] = signalr.connections
+      const activeStatus = update('ActiveStatusChanged', {
+        activeStatus: 'AnalyseBiometric',
+      })
+      connection.handlers.IntakeUpdated(activeStatus)
+      connection.handlers.IntakeUpdated(
+        update('ProposalStatusChanged', { status }),
+      )
+      connection.closeHandler?.()
+      await vi.advanceTimersByTimeAsync(60_000)
 
-    expect(onUpdate).toHaveBeenCalledWith(activeStatus)
-    expect(onClosed).toHaveBeenCalledTimes(1)
-    expect(connection.stop).toHaveBeenCalled()
-    expect(getConnection).toHaveBeenCalledTimes(1)
-  })
+      expect(onUpdate).toHaveBeenCalledWith(activeStatus)
+      expect(onClosed).toHaveBeenCalledTimes(1)
+      expect(connection.stop).toHaveBeenCalled()
+      expect(getConnection).toHaveBeenCalledTimes(1)
+    },
+  )
 
-  it.each(['Analysing', 'Approved'])(
-    'keeps listening when the proposal moves to %s',
+  it.each(['Analysing', 'Approved', 'PendingPayment'])(
+    'keeps listening when the order moves to %s',
     async (status) => {
       const getConnection = vi.fn().mockResolvedValue(ticket('t'))
       const { client, onUpdate, onClosed } = createClient(getConnection)

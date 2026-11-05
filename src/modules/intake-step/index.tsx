@@ -4,14 +4,21 @@ import { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 import { intakeFlowCopyRecord } from '@/common/records/intake-flow-copy.record'
 import {
   getIntakeStepStatusByRoute,
+  INTAKE_CANCELED_ROUTE,
+  INTAKE_CREDIT_ANALYSIS_ROUTE,
+  INTAKE_CREDIT_APPROVED_ROUTE,
+  INTAKE_CREDIT_DENIED_ROUTE,
   INTAKE_FINISHED_ROUTE,
 } from '@/common/records/intake-step-route.record'
 import type { IntakeStartResponse } from '@/domain/intake.domain'
 import { IntakeProgressHeader } from '@/modules/intake/components/intake-progress-header'
+import { IntakeSupportButton } from '@/modules/intake/components/intake-support-button'
 import { IntakeBiometrics } from '@/modules/intake-biometrics'
 import { IntakeFinished } from '@/modules/intake-finished'
-import { getIntakeProposalSummary } from '@/services/http/intake/server/get-intake-proposal-summary'
+import { getIntakeOrderSummary } from '@/services/http/intake/server/get-intake-order-summary'
 import { getIntakeStepData } from '@/services/http/intake/server/get-intake-step-data'
+import { IntakeCreditAnalysis } from './components/intake-credit-analysis'
+import { IntakeStepPlaceholder } from './components/intake-step-placeholder'
 
 type IntakeStepProps = {
   token: string
@@ -25,7 +32,7 @@ function StepUnavailable({ header }: { header: ReactNode }) {
       tone='info'
       header={header}
       title='Continue pelo WhatsApp'
-      description='Esta etapa ainda não está disponível por aqui. Volte para o WhatsApp para seguir com sua proposta.'
+      description='Esta etapa ainda não está disponível por aqui. Volte para o WhatsApp para seguir com seu pedido.'
     />
   )
 }
@@ -42,7 +49,7 @@ function StepLoadError({ header }: { header: ReactNode }) {
 }
 
 export async function IntakeStep({ token, route, start }: IntakeStepProps) {
-  const summary = await getIntakeProposalSummary(token)
+  const summary = await getIntakeOrderSummary(token)
   const header = start.dateAndStatus && (
     <IntakeProgressHeader
       steps={start.dateAndStatus.steps}
@@ -51,20 +58,52 @@ export async function IntakeStep({ token, route, start }: IntakeStepProps) {
     />
   )
 
-  if (route === INTAKE_FINISHED_ROUTE) {
-    return (
-      <IntakeFinished
-        header={header}
-        proposalId={start.proposalId}
-        hasWhiteLabel={Boolean(start.whiteLabel?.applied)}
-      />
-    )
+  switch (route) {
+    case INTAKE_FINISHED_ROUTE:
+      return <IntakeFinished header={header} orderId={start.orderId} />
+    case INTAKE_CREDIT_ANALYSIS_ROUTE:
+      return <IntakeCreditAnalysis {...intakeFlowCopyRecord.creditAnalysis} />
+    case INTAKE_CREDIT_APPROVED_ROUTE:
+      return <StatusScreen {...intakeFlowCopyRecord.creditApproved} />
+    case INTAKE_CREDIT_DENIED_ROUTE:
+      return <StatusScreen tone='info' {...intakeFlowCopyRecord.creditDenied} />
+    case INTAKE_CANCELED_ROUTE:
+      return (
+        <StatusScreen tone='danger' {...intakeFlowCopyRecord.canceled}>
+          <IntakeSupportButton />
+        </StatusScreen>
+      )
   }
 
   const status = getIntakeStepStatusByRoute(route)
   const screen = { token, header }
 
   switch (status) {
+    case IntakeStepStatus.IncludePersonalData:
+      return (
+        <IntakeStepPlaceholder
+          header={null}
+          {...intakeFlowCopyRecord.personalData}
+        />
+      )
+    case IntakeStepStatus.IncludeAddress:
+      return (
+        <IntakeStepPlaceholder
+          header={header}
+          {...intakeFlowCopyRecord.address}
+        />
+      )
+    case IntakeStepStatus.ChooseInstallments:
+      return (
+        <IntakeStepPlaceholder
+          header={header}
+          {...intakeFlowCopyRecord.installments}
+        />
+      )
+    case IntakeStepStatus.IncludeCreditCard:
+      return (
+        <IntakeStepPlaceholder header={header} {...intakeFlowCopyRecord.card} />
+      )
     case IntakeStepStatus.AnalyseBiometric: {
       const data = await getIntakeStepData(token, status)
       if (!data) return <StepLoadError header={header} />

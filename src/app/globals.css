@@ -15,6 +15,6 @@
 
 @layer base {
   body {
-    @apply scroll-smooth bg-linear-to-b from-gray-1 to-(--intake-page-bg-to,var(--color-brand-secondary-2)) text-gray-12 antialiased;
+    @apply scroll-smooth bg-linear-to-b from-gray-1 to-brand-secondary-2 text-gray-12 antialiased;
   }
 }

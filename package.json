@@ -27,7 +27,6 @@
     "@datadog/openfeature-browser": "^1.2.5",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
-    "@fortawesome/pro-light-svg-icons": "^7.2.0",
     "@fortawesome/pro-regular-svg-icons": "^7.2.0",
     "@fortawesome/pro-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
@@ -47,7 +46,6 @@
     "date-fns": "^4.1.0",
     "imask": "^7.6.1",
     "input-otp": "^1.5.0",
-    "jotai": "^2.15.0",
     "next": "^16.2.12",
     "postcss": "^8.5.6",
     "qs": "^6.14.0",
@@ -60,7 +58,6 @@
     "tailwind-variants": "^3.1.1",
     "tailwindcss": "^4.0.12",
     "tailwindcss-animate": "^1.0.7",
-    "usehooks-ts": "^3.1.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

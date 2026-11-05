@@ -41,11 +41,9 @@ describe('useAdvanceIntakeStep', () => {
   })
 
   it('goes to the entry of the link when the active step changed', async () => {
-    intakeService.getStart.mockResolvedValue(
-      startWith(IntakeStepStatus.AnalyseBiometric),
-    )
+    intakeService.getStart.mockResolvedValue(startWith(null))
     const { result } = renderHook(
-      () => useAdvanceIntakeStep('a/b', IntakeStepStatus.IncludeDocument),
+      () => useAdvanceIntakeStep('a/b', IntakeStepStatus.AnalyseBiometric),
       { wrapper },
     )
 
@@ -62,10 +60,10 @@ describe('useAdvanceIntakeStep', () => {
 
   it('checks only once and keeps the loading while the step is not released', async () => {
     intakeService.getStart.mockResolvedValue(
-      startWith(IntakeStepStatus.IncludeDocument),
+      startWith(IntakeStepStatus.AnalyseBiometric),
     )
     const { result } = renderHook(
-      () => useAdvanceIntakeStep('abc', IntakeStepStatus.IncludeDocument),
+      () => useAdvanceIntakeStep('abc', IntakeStepStatus.AnalyseBiometric),
       { wrapper },
     )
 

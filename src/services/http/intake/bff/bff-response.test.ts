@@ -67,7 +67,7 @@ describe('toBffStepResponse', () => {
     const response = await toBffStepResponse('abc', {
       ok: false,
       status: 409,
-      problem: { status: 409, type: 'Intake.SellerAlreadyDecided' },
+      problem: { status: 409, type: 'Intake.BiometryNotAvailable' },
     })
 
     expect(clearIntakeAccessToken).not.toHaveBeenCalled()

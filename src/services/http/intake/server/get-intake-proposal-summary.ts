@@ -9,19 +9,10 @@ import { getIntakeAccessToken } from './intake-session'
 export function toProposalSummary(
   summary: IntakeApiProposalSummary,
 ): IntakeProposalSummary {
-  const { vehicle, values } = summary
+  const { values } = summary
   return {
     proposalNumber: String(summary.number),
     createdAt: summary.createdAt ?? null,
-    disbursementDate: summary.disbursementDate ?? null,
-    vehicleDescription: [vehicle?.model, vehicle?.version, vehicle?.year]
-      .filter(Boolean)
-      .join(' '),
-    vehicleModel: vehicle?.model ?? null,
-    vehicleVersion: vehicle?.version ?? null,
-    vehicleYear: vehicle?.year ?? null,
-    vehicleValue: values?.vehicleAmount ?? 0,
-    downPaymentValue: values?.downPaymentAmount ?? 0,
     financedValue: values?.financedAmount ?? 0,
     installments: {
       count: values?.term ?? 0,

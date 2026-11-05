@@ -1,7 +1,6 @@
 import { act, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
-import { IntakeFlow } from '@/common/enums/intake-flow.enum'
 import type { IntakeBiometryStepData } from '@/domain/intake.domain'
 import { renderWithProviders } from '@/tests/render-with-providers'
 import { IntakeBiometrics } from '.'
@@ -23,7 +22,6 @@ function renderScreen(data: IntakeBiometryStepData = SESSION) {
   return renderWithProviders(
     <IntakeBiometrics
       token='abc'
-      flow={IntakeFlow.BuyerFinancing}
       header={null}
       data={data}
       title='Biometria'

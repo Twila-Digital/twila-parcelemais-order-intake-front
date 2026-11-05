@@ -1,7 +1,6 @@
 'use client'
 
 import { useQueryClient } from '@tanstack/react-query'
-import { toast } from '@twila-digital/components/alert'
 import { usePathname, useRouter } from 'next/navigation'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import {
@@ -27,11 +26,6 @@ const FALLBACK_POLLING_INTERVAL_IN_MILLISECONDS =
 
 function getCurrentRoute(pathname: string) {
   return pathname.split('/')[3] || null
-}
-
-function getRefusedDocumentMessage({ data }: IntakeRealtimeUpdate) {
-  const name = data.description ?? 'Um documento'
-  return data.reason ? `${name} recusado: ${data.reason}` : `${name} recusado`
 }
 
 type IntakeRealtimeProviderProps = {
@@ -105,17 +99,9 @@ export function IntakeRealtimeProvider({
         case 'BiometryStatusChanged':
           void refetchStepData()
           return
-        case 'DocumentStatusChanged':
-          toast.warning({
-            title: getRefusedDocumentMessage(update),
-            orientation: 'horizontal',
-          })
-          void refetchStepData()
-          router.refresh()
-          return
       }
     },
-    [goToRoute, refetchStepData, router, syncWithStart],
+    [goToRoute, refetchStepData, syncWithStart],
   )
 
   const handlersRef = useRef({

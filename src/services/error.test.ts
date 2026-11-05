@@ -34,17 +34,17 @@ describe('ApiError', () => {
   it('uses type and detail as the issue for business errors', () => {
     const error = new ApiError({
       status: 409,
-      type: 'Account.AlreadyRegisteredDocument',
-      detail: 'Documento já cadastrado.',
+      type: 'Intake.InvalidCode',
+      detail: 'Código inválido.',
     })
 
     expect(error.issues).toEqual([
       {
-        code: 'Account.AlreadyRegisteredDocument',
-        message: 'Documento já cadastrado.',
+        code: 'Intake.InvalidCode',
+        message: 'Código inválido.',
       },
     ])
-    expect(error.messages).toEqual(['Documento já cadastrado.'])
+    expect(error.messages).toEqual(['Código inválido.'])
   })
 
   it('does not expose the generic validation detail as a message', () => {

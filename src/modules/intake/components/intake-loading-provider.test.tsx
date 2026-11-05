@@ -3,7 +3,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { useIntakeLoading } from '@/modules/intake/hooks/use-intake-loading'
 import { IntakeLoadingProvider } from './intake-loading-provider'
 
-const navigation = vi.hoisted(() => ({ pathname: '/intake/abc/documentos' }))
+const navigation = vi.hoisted(() => ({
+  pathname: '/intake/abc/etapa-indisponivel',
+}))
 
 vi.mock('next/navigation', () => ({ usePathname: () => navigation.pathname }))
 vi.mock('@twila-digital/components/loading', () => ({

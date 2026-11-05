@@ -21,12 +21,13 @@ const realtime = vi.hoisted(() => ({
   stop: vi.fn(),
 }))
 const router = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }))
-const navigation = vi.hoisted(() => ({ pathname: '/intake/abc/documentos' }))
+const navigation = vi.hoisted(() => ({
+  pathname: '/intake/abc/etapa-indisponivel',
+}))
 const intakeService = vi.hoisted(() => ({
   getStart: vi.fn(),
   getRealtimeConnection: vi.fn(),
 }))
-const toast = vi.hoisted(() => ({ warning: vi.fn() }))
 
 vi.mock('@/services/http/intake/intake-realtime-client', () => ({
   IntakeRealtimeClient: class {
@@ -42,7 +43,6 @@ vi.mock('next/navigation', () => ({
   usePathname: () => navigation.pathname,
 }))
 vi.mock('@/services/http/intake', () => ({ intakeService }))
-vi.mock('@twila-digital/components/alert', () => ({ toast }))
 vi.mock('@/env', () => ({
   env: { NEXT_PUBLIC_WEBSOCKET_URL: 'https://api.test' },
 }))
@@ -69,7 +69,6 @@ const update = (
 ): IntakeRealtimeUpdate => ({
   type,
   proposalId: 'p1',
-  participant: 'Buyer' as IntakeRealtimeUpdate['participant'],
   occurredAt,
   data,
 })
@@ -80,8 +79,8 @@ const startWith = (activeStatus: string | null) => ({
 
 describe('IntakeRealtimeProvider', () => {
   beforeEach(() => {
-    navigation.pathname = '/intake/abc/documentos'
-    intakeService.getStart.mockResolvedValue(startWith('IncludeDocument'))
+    navigation.pathname = '/intake/abc/etapa-indisponivel'
+    intakeService.getStart.mockResolvedValue(startWith('SomethingNew'))
   })
 
   afterEach(() => {
@@ -141,7 +140,7 @@ describe('IntakeRealtimeProvider', () => {
 
     act(() =>
       options.onUpdate(
-        update('ActiveStatusChanged', { activeStatus: 'IncludeDocument' }),
+        update('ActiveStatusChanged', { activeStatus: 'SomethingNew' }),
       ),
     )
 
@@ -176,39 +175,13 @@ describe('IntakeRealtimeProvider', () => {
       options.onUpdate(
         update(
           'ActiveStatusChanged',
-          { activeStatus: 'IncludeDepositAccount' },
+          { activeStatus: 'SomethingNew' },
           '2026-10-16T13:04:00.000Z',
         ),
       )
     })
 
     expect(router.replace).toHaveBeenCalledTimes(1)
-  })
-
-  it('warns about a refused document and reloads the data', () => {
-    const { options, queryClient } = renderProvider()
-    const invalidate = vi.spyOn(queryClient, 'invalidateQueries')
-
-    act(() =>
-      options.onUpdate(
-        update('DocumentStatusChanged', {
-          documentType: 'PROOF_INCOME',
-          description: 'Comprovante de Renda',
-          status: 'Invalid',
-          reason: 'Documento ilegível',
-        }),
-      ),
-    )
-
-    expect(toast.warning).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Comprovante de Renda recusado: Documento ilegível',
-      }),
-    )
-    expect(invalidate).toHaveBeenCalledWith({
-      queryKey: ['intake-step-data', 'abc'],
-    })
-    expect(router.refresh).toHaveBeenCalled()
   })
 
   it('reloads the biometry when the Didit result changes', () => {
@@ -233,17 +206,13 @@ describe('IntakeRealtimeProvider', () => {
     await act(async () => options.onConnected())
     expect(router.replace).toHaveBeenCalledWith('/intake/abc/biometria')
 
-    intakeService.getStart.mockResolvedValue(startWith('IncludeDocument'))
+    intakeService.getStart.mockResolvedValue(startWith('SomethingNew'))
     await act(async () => options.onConnected())
     expect(router.refresh).toHaveBeenCalledTimes(1)
   })
 
   it('follows the start when the proposal status changes', async () => {
-    intakeService.getStart.mockResolvedValue({
-      participant: 'Buyer',
-      proposal: { status: 'Analysing', externalStatus: null },
-      dateAndStatus: null,
-    })
+    intakeService.getStart.mockResolvedValue(startWith(null))
     const { options } = renderProvider()
 
     await act(async () =>
@@ -253,7 +222,7 @@ describe('IntakeRealtimeProvider', () => {
     )
 
     expect(router.replace).toHaveBeenCalledWith(
-      '/intake/abc/proposta-em-analise',
+      '/intake/abc/proposta-finalizada',
     )
   })
 

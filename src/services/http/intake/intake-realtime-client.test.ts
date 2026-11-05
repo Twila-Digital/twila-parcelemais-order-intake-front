@@ -64,7 +64,6 @@ const update = (
 ): IntakeRealtimeUpdate => ({
   type,
   proposalId: 'p1',
-  participant: 'Buyer' as IntakeRealtimeUpdate['participant'],
   occurredAt: '2026-10-16T13:05:00.123+00:00',
   data,
 })
@@ -190,7 +189,7 @@ describe('IntakeRealtimeClient', () => {
     await flush()
     const [connection] = signalr.connections
     const activeStatus = update('ActiveStatusChanged', {
-      activeStatus: 'IncludeDocument',
+      activeStatus: 'AnalyseBiometric',
     })
     connection.handlers.IntakeUpdated(activeStatus)
     connection.handlers.IntakeUpdated(
@@ -205,7 +204,7 @@ describe('IntakeRealtimeClient', () => {
     expect(getConnection).toHaveBeenCalledTimes(1)
   })
 
-  it.each(['InNegotiation', 'Analysing', 'Approved'])(
+  it.each(['Analysing', 'Approved'])(
     'keeps listening when the proposal moves to %s',
     async (status) => {
       const getConnection = vi.fn().mockResolvedValue(ticket('t'))

@@ -3,10 +3,6 @@ export const ONE_MINUTE_IN_SECONDS = 60 as const
 export const ONE_HOUR_IN_MINUTES = 60 as const
 export const ONE_DAY_IN_HOURS = 24 as const
 
-export const ONE_DAY_IN_SECONDS = 60 * 60 * 24
-
-export const THIRTY_DAYS_IN_SECONDS = 30 * ONE_DAY_IN_SECONDS
-
 export const ONE_DAY_IN_MILLISECONDS =
   ONE_SECOND_IN_MILLISECONDS *
   ONE_MINUTE_IN_SECONDS *

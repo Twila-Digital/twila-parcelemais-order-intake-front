@@ -9,15 +9,15 @@ describe('ApiError', () => {
       detail: 'A validation problem occurred.',
       errors: [
         { code: 'Account.CpfIsRequired', message: 'O cpf é obrigatório.' },
-        { code: 'Proposal.AccountDigitInvalidFormat  ', message: 'Dígito' },
+        { code: 'Order.InvalidStatus  ', message: 'Status inválido.' },
       ],
     })
 
     expect(error.issues).toEqual([
       { code: 'Account.CpfIsRequired', message: 'O cpf é obrigatório.' },
-      { code: 'Proposal.AccountDigitInvalidFormat', message: 'Dígito' },
+      { code: 'Order.InvalidStatus', message: 'Status inválido.' },
     ])
-    expect(error.messages).toEqual(['O cpf é obrigatório.', 'Dígito'])
+    expect(error.messages).toEqual(['O cpf é obrigatório.', 'Status inválido.'])
   })
 
   it('normalizes errors sent as a dictionary', () => {

@@ -14,6 +14,7 @@ export type ApiErrorData = {
   Message?: string
   message?: string
   detail?: string
+  retryAfterSeconds?: number
 }
 
 const VALIDATION_ERROR_TYPE = 'ValidationError'
@@ -25,6 +26,7 @@ export class ApiError extends Error implements ApiErrorData {
   errors?: ApiErrorData['errors']
   issues: ApiErrorIssue[]
   messages?: string[]
+  retryAfterSeconds?: number
 
   private getIssues(): ApiErrorIssue[] {
     if (Array.isArray(this.errors)) {
@@ -68,6 +70,7 @@ export class ApiError extends Error implements ApiErrorData {
     this.title = data.title
     this.type = data.type
     this.errors = data.errors
+    this.retryAfterSeconds = data.retryAfterSeconds
     this.message = data.Message || data.message || data.detail || ''
     this.issues = this.getIssues()
     this.messages = this.getMessages()

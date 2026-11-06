@@ -12,6 +12,7 @@ import { LinkButton } from '@twila-digital/components/link-button'
 import { useId } from 'react'
 import { useBoolean } from '@/common/hooks/use-boolean'
 import { cn } from '@/common/lib/utils'
+import { getIntakeProgressSteps } from '@/common/records/intake-progress-step.record'
 import { formatBrazilianDateTime } from '@/common/utils/date'
 import type { IntakeStep } from '@/domain/intake.domain'
 
@@ -44,10 +45,11 @@ type IntakeStepsProgressProps = {
 }
 
 export function IntakeStepsProgress({
-  steps,
+  steps: allSteps,
   activeStatus,
   label,
 }: IntakeStepsProgressProps) {
+  const steps = getIntakeProgressSteps(allSteps)
   const listId = useId()
   const [isOpen, { toggle }] = useBoolean(false)
   const activeStep = steps.find((step) => step.status === activeStatus)

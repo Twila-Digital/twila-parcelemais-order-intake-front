@@ -8,9 +8,9 @@
 @custom-variant dark (&:is(.dark *));
 
 [data-brand="parcelemais"] {
-  --font-heading: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
-  --font-text: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sansation), ui-sans-serif, system-ui, sans-serif;
+  --font-text: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {

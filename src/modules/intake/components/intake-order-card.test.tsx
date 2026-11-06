@@ -15,7 +15,7 @@ describe('IntakeOrderCard', () => {
   it('shows the order and reveals its values on demand', async () => {
     render(<IntakeOrderCard summary={summary} />)
 
-    expect(screen.getByText('Pedido 202664646')).toBeInTheDocument()
+    expect(screen.getByText('Pedido #202664646')).toBeInTheDocument()
     expect(screen.getByText('Loja Exemplo')).toBeInTheDocument()
     expect(screen.queryByText('Valor do pedido')).not.toBeInTheDocument()
 

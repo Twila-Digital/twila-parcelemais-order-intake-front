@@ -10,6 +10,7 @@ import {
   INTAKE_CREDIT_DENIED_ROUTE,
   INTAKE_FINISHED_ROUTE,
 } from '@/common/records/intake-step-route.record'
+import { ILLUSTRATIONS } from '@/constants/illustrations'
 import type { IntakeStartResponse } from '@/domain/intake.domain'
 import { IntakeProgressHeader } from '@/modules/intake/components/intake-progress-header'
 import { IntakeSupportButton } from '@/modules/intake/components/intake-support-button'
@@ -79,30 +80,41 @@ export async function IntakeStep({ token, route, start }: IntakeStepProps) {
   const screen = { token, header }
 
   switch (status) {
+    // TODO(PM-812): trocar pelo módulo da etapa, que importa a própria ilustração
     case IntakeStepStatus.UpdateProfile:
       return (
         <IntakeStepPlaceholder
           header={null}
+          illustration={ILLUSTRATIONS.personalData}
           {...intakeFlowCopyRecord.personalData}
         />
       )
+    // TODO(PM-814): trocar pelo módulo da etapa, que importa a própria ilustração
     case IntakeStepStatus.UpsertAddress:
       return (
         <IntakeStepPlaceholder
           header={header}
+          illustration={ILLUSTRATIONS.address}
           {...intakeFlowCopyRecord.address}
         />
       )
+    // TODO(PM-815): trocar pelo módulo da etapa, que importa a própria ilustração
     case IntakeStepStatus.UpdateTerm:
       return (
         <IntakeStepPlaceholder
           header={header}
+          illustration={ILLUSTRATIONS.installments}
           {...intakeFlowCopyRecord.installments}
         />
       )
+    // TODO(PM-816): trocar pelo módulo da etapa, que importa a própria ilustração
     case IntakeStepStatus.PaymentProfile:
       return (
-        <IntakeStepPlaceholder header={header} {...intakeFlowCopyRecord.card} />
+        <IntakeStepPlaceholder
+          header={header}
+          illustration={ILLUSTRATIONS.card}
+          {...intakeFlowCopyRecord.card}
+        />
       )
     case IntakeStepStatus.Biometry: {
       const data = await getIntakeStepData(token, status)

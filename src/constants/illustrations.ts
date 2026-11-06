@@ -1,41 +1,18 @@
-import Biometrics from '@public/images/illustrations/biometrics.png'
-import Phone from '@public/images/illustrations/phone.png'
+import Address from '@public/images/illustrations/address.webp'
+import Biometrics from '@public/images/illustrations/biometrics.webp'
+import Card from '@public/images/illustrations/card.webp'
+import Installments from '@public/images/illustrations/installments.webp'
+import PersonalData from '@public/images/illustrations/personal-data.webp'
+import Phone from '@public/images/illustrations/phone.webp'
 import type { StaticImageData } from 'next/image'
-import type { CSSProperties } from 'react'
 
-export type Illustration = {
-  src: StaticImageData
-  frame: CSSProperties
-  image: CSSProperties
-}
-
-function illustration(
-  src: StaticImageData,
-  [left, top, width, height]: [number, number, number, number],
-  [imageLeft, imageTop, imageWidth, imageHeight]: [
-    number,
-    number,
-    number,
-    number,
-  ],
-): Illustration {
-  return {
-    src,
-    frame: { left, top, width, height },
-    image: {
-      left: `${imageLeft}%`,
-      top: `${imageTop}%`,
-      width: `${imageWidth}%`,
-      height: `${imageHeight}%`,
-    },
-  }
-}
+export type Illustration = StaticImageData
 
 export const ILLUSTRATIONS = {
-  phone: illustration(Phone, [11, 0, 40, 47], [-21.81, -4.87, 139.74, 109.65]),
-  biometrics: illustration(
-    Biometrics,
-    [16, -0.5, 34, 48],
-    [-41.9, -6.81, 173.74, 118.12],
-  ),
+  phone: Phone,
+  personalData: PersonalData,
+  address: Address,
+  installments: Installments,
+  card: Card,
+  biometrics: Biometrics,
 } satisfies Record<string, Illustration>

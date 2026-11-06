@@ -2,54 +2,63 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
+import type { IntakeStep } from '@/domain/intake.domain'
 import { IntakeStepsProgress } from './intake-steps-progress'
 
-// O enum só tem as etapas com tela; as demais chegam da API como texto
-const IDENTITY_CHECK = 'IdentityCheck' as IntakeStepStatus
-const PAYMENT = 'Payment' as IntakeStepStatus
+function step(
+  status: IntakeStepStatus,
+  completedAt: string | null = null,
+): IntakeStep {
+  return {
+    status,
+    description: `Descrição da API ${status}`,
+    isCompleted: completedAt !== null,
+    completedAt,
+  }
+}
 
 const steps = [
-  {
-    status: IDENTITY_CHECK,
-    description: 'Dados pessoais',
-    isCompleted: true,
-    completedAt: '2026-10-16T14:42:09.0193699+00:00',
-  },
-  {
-    status: IntakeStepStatus.Biometry,
-    description: 'Biometria e assinatura',
-    isCompleted: false,
-    completedAt: null,
-  },
-  {
-    status: PAYMENT,
-    description: 'Pagamento',
-    isCompleted: false,
-    completedAt: null,
-  },
+  step(IntakeStepStatus.UpdateProfile, '2026-10-16T14:00:00+00:00'),
+  step(IntakeStepStatus.UpsertAddress, '2026-10-16T14:42:09.0193699+00:00'),
+  step(IntakeStepStatus.UpdateTerm),
+  step(IntakeStepStatus.PaymentProfile),
+  step(IntakeStepStatus.Biometry),
+  step(IntakeStepStatus.StartSale),
 ]
 
+function renderProgress(activeStatus = IntakeStepStatus.UpdateTerm) {
+  render(<IntakeStepsProgress steps={steps} activeStatus={activeStatus} />)
+}
+
 async function openSteps() {
-  render(
-    <IntakeStepsProgress
-      steps={steps}
-      activeStatus={IntakeStepStatus.Biometry}
-    />,
-  )
+  renderProgress()
   await userEvent.click(screen.getByRole('button', { name: 'Ver etapas' }))
   return within(screen.getByRole('list', { name: 'Etapas do pedido' }))
 }
 
 describe('IntakeStepsProgress', () => {
-  it('shows the active step and toggles the step list', async () => {
-    render(
-      <IntakeStepsProgress
-        steps={steps}
-        activeStatus={IntakeStepStatus.Biometry}
-      />,
-    )
+  it('shows only the four order steps in the progress bar', () => {
+    renderProgress()
 
-    expect(screen.getByText('Biometria e assinatura')).toBeInTheDocument()
+    const bar = within(
+      screen.getByRole('list', { name: 'Progresso do pedido' }),
+    )
+    expect(bar.getAllByRole('listitem').map((item) => item.ariaLabel)).toEqual([
+      'Endereço',
+      'Parcelas',
+      'Cartão',
+      'Biometria',
+    ])
+    expect(bar.getByLabelText('Parcelas')).toHaveAttribute(
+      'aria-current',
+      'step',
+    )
+  })
+
+  it('shows the active step label and toggles the step list', async () => {
+    renderProgress()
+
+    expect(screen.getByText('Parcelas')).toBeInTheDocument()
     const toggle = screen.getByRole('button', { name: 'Ver etapas' })
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
 
@@ -64,7 +73,7 @@ describe('IntakeStepsProgress', () => {
     const list = await openSteps()
 
     const [completed] = list.getAllByRole('listitem')
-    expect(completed).toHaveTextContent('Dados pessoais')
+    expect(completed).toHaveTextContent('Endereço')
     expect(completed).toHaveTextContent('(concluída)')
     expect(completed).toHaveTextContent('16/10/2026 11:42')
   })
@@ -77,5 +86,11 @@ describe('IntakeStepsProgress', () => {
     expect(current).toHaveTextContent('Você está aqui!')
     expect(pending).toHaveTextContent('(pendente)')
     expect(pending).not.toHaveTextContent('Você está aqui!')
+  })
+
+  it('shows the order as finished when there is no active step', () => {
+    render(<IntakeStepsProgress steps={steps} activeStatus={null} />)
+
+    expect(screen.getByText('Pedido concluído')).toBeInTheDocument()
   })
 })

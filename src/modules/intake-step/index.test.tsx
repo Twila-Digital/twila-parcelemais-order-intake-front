@@ -7,6 +7,7 @@ import { IntakeStep } from '.'
 const getIntakeStepData = vi.hoisted(() => vi.fn())
 
 vi.mock('server-only', () => ({}))
+vi.mock('next/image', () => ({ default: () => null }))
 vi.mock('@/env', () => ({
   env: { NEXT_PUBLIC_PARCELEMAIS_URL: 'https://staging.parcelemais.com.br' },
 }))

@@ -48,5 +48,5 @@ Front do fluxo de criação de pedido via WhatsApp (Parcele Mais / Cartão Simpl
 - Fluxo único (sem papéis nem tipos de proposta): textos das telas em `common/records/intake-flow-copy.record.ts`.
 - Contrato da API: `swagger.json` na raiz (endpoints `/v1/intake/*`). HMAC só em `start`/`send-code`/`verify-code` (`common/lib/hmac.ts`); 401/403 nas rotas de etapa apaga o cookie (`toBffStepResponse`).
 - Cada etapa é um módulo `modules/intake-<etapa>`; `modules/intake-step` escolhe a tela pela rota e carrega os dados no servidor (`getIntakeStepData`).
-- Ilustrações dos títulos e seus recortes do Figma: `constants/illustrations.ts`.
+- Ilustrações dos títulos: `constants/illustrations.ts`. São `.webp` exportados já recortados do Figma (4x a caixa de 51px de altura); a largura sai da proporção da imagem.
 - Pendências com o backend e produto ficam no README (seção "Pendências com backend/produto"), não em comentários no código.

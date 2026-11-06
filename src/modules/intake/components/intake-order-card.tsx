@@ -35,12 +35,12 @@ export function IntakeOrderCard({ summary }: IntakeOrderCardProps) {
       className='flex flex-col gap-lg rounded-sm border border-gray-3 bg-white p-md'
     >
       <div className='flex items-center gap-sm'>
-        <div className='flex flex-1 items-center justify-between gap-sm'>
-          <p className='font-semibold tablet:font-medium tablet:text-body-16 text-body-14'>
-            Pedido {summary.orderNumber}
+        <div className='flex flex-1 flex-col gap-xs'>
+          <p className='font-semibold text-body-16'>
+            Pedido #{summary.orderNumber}
           </p>
           {summary.establishmentName && (
-            <p className='truncate text-body-12 text-gray-9'>
+            <p className='text-body-14 text-gray-11'>
               {summary.establishmentName}
             </p>
           )}

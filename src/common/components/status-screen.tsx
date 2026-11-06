@@ -63,7 +63,7 @@ export function StatusScreen({
           />
         </span>
         <div className='flex flex-col gap-md'>
-          <h1 className='font-heading font-medium tablet:text-h4 text-h5 leading-[1.4]'>
+          <h1 className='font-bold font-heading tablet:text-h4 text-h5 leading-[1.4]'>
             {title}
           </h1>
           <p className='tablet:text-body-16 text-body-14 text-gray-11'>

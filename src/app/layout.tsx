@@ -1,6 +1,6 @@
 import { config } from '@fortawesome/fontawesome-svg-core'
 import type { Metadata, Viewport } from 'next'
-import { Archivo, Roboto } from 'next/font/google'
+import { Inter, Sansation } from 'next/font/google'
 import type { ReactNode } from 'react'
 import { defaultConfig } from 'tailwind-variants'
 import { getDatadogConfig } from '@/config/datadog-config'
@@ -14,15 +14,15 @@ config.autoAddCss = false
 
 defaultConfig.twMergeConfig = tailwindMergeConfig
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  variable: '--font-roboto',
-})
-const archivo = Archivo({
+const inter = Inter({
   weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
-  variable: '--font-archivo',
+  variable: '--font-inter',
+})
+const sansation = Sansation({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--font-sansation',
 })
 
 export const metadata: Metadata = {
@@ -47,7 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang='pt-BR'
-      className={`${roboto.variable} ${archivo.variable}`}
+      className={`${inter.variable} ${sansation.variable}`}
       data-brand='parcelemais'
       data-mode='light'
     >

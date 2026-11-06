@@ -40,7 +40,8 @@ export const AppProvider = ({
           </FeatureFlagsProvider>
         </HydrationBoundary>
         <ReactQueryDevtools />
-        <ToastViewport />
+        {/* TODO: remove these overrides once the DS Toast matches the Alert (medium title, gray-11 description) */}
+        <ToastViewport className='[&_[data-slot=alert-description]]:text-gray-11 [&_[data-slot=alert-title]]:font-medium' />
       </ToastProvider>
     </QueryClientProvider>
   )

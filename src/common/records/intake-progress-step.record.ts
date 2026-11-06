@@ -1,8 +1,6 @@
 import { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 import type { IntakeStep } from '@/domain/intake.domain'
 
-// Etapas da barra de progresso, com o rótulo curto do Figma. Dados pessoais
-// fica de fora (vem antes da análise de crédito) e a compra não tem tela
 export const intakeProgressStepRecord: Partial<
   Record<IntakeStepStatus, string>
 > = {

@@ -6,7 +6,6 @@ import PersonalData from '@public/images/illustrations/personal-data.webp'
 import Phone from '@public/images/illustrations/phone.webp'
 import type { StaticImageData } from 'next/image'
 
-// Exportadas já recortadas do Figma, em 4x da caixa de 51px de altura do título
 export type Illustration = StaticImageData
 
 export const ILLUSTRATIONS = {

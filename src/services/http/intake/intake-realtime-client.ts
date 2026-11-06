@@ -18,7 +18,7 @@ import { hasApiErrorStatus } from '@/services/error'
 
 const HUB_PATH = '/api/signalr/intake/hub'
 const UPDATE_METHOD = 'IntakeUpdated'
-const ORDER_STATUS_CHANGED = 'ProposalStatusChanged'
+const ORDER_STATUS_CHANGED = 'OrderStatusChanged'
 
 const RECONNECT_DELAYS_IN_MILLISECONDS = [1, 2, 5, 10].map(
   (seconds) => seconds * ONE_SECOND_IN_MILLISECONDS,

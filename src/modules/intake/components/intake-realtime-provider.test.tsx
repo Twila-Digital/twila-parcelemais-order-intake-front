@@ -216,9 +216,7 @@ describe('IntakeRealtimeProvider', () => {
     const { options } = renderProvider()
 
     await act(async () =>
-      options.onUpdate(
-        update('ProposalStatusChanged', { status: 'Analysing' }),
-      ),
+      options.onUpdate(update('OrderStatusChanged', { status: 'Analysing' })),
     )
 
     expect(router.replace).toHaveBeenCalledWith('/intake/abc/pedido-concluido')

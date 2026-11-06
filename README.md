@@ -129,7 +129,7 @@ Erros vêm como ProblemDetails com o código em `type` (ex.: `Intake.InviteClose
 - **Parcelas:** não há endpoint de intake para simular e escolher as parcelas (só `orders/simulate` e `orders/term`, fora do intake).
 - **Compra:** `POST intake/sale` exige `Idempotency-Key`; falta definir quando o front chama (ao fim da biometria?).
 - **Biometria:** `RETRIED` (reprovada e reprocessada) tem um bug conhecido do lado do backend.
-- **Tempo real:** o hub do SignalR não está no swagger. O front espera `ProposalStatusChanged` (com `data.status` = status do pedido) e `orderId` no evento; confirmar os nomes.
+- **Tempo real:** o hub do SignalR não está no swagger. O front espera `OrderStatusChanged` (com `data.status` = status do pedido) e `orderId` no evento; confirmar os nomes.
 - **Link mágico:** `intake/access` (rota `?acesso=`) não aparece no swagger.
 - **Senha** em `PUT intake/profile`: a API exige, mas a tela 1.2 do Figma não tem campo de senha.
 - **Dados pessoais (Figma 1.2):** a tela tem Nome e Sobrenome (a API tem só `name`), CPF (a API usa o do convite) e Telefone desabilitado (o start não devolve).

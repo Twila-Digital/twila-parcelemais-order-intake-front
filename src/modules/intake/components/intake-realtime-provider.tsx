@@ -93,7 +93,7 @@ export function IntakeRealtimeProvider({
         case 'ActiveStatusChanged':
           goToRoute(getIntakeStepRoute(update.data.activeStatus ?? null), true)
           return
-        case 'ProposalStatusChanged':
+        case 'OrderStatusChanged':
           void syncWithStart(true)
           return
         case 'BiometryStatusChanged':

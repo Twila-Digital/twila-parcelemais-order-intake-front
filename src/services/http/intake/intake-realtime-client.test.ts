@@ -200,7 +200,7 @@ describe('IntakeRealtimeClient', () => {
       })
       connection.handlers.IntakeUpdated(activeStatus)
       connection.handlers.IntakeUpdated(
-        update('ProposalStatusChanged', { status }),
+        update('OrderStatusChanged', { status }),
       )
       connection.closeHandler?.()
       await vi.advanceTimersByTimeAsync(60_000)
@@ -221,7 +221,7 @@ describe('IntakeRealtimeClient', () => {
       client.start()
       await flush()
       const [connection] = signalr.connections
-      const statusChanged = update('ProposalStatusChanged', { status })
+      const statusChanged = update('OrderStatusChanged', { status })
       connection.handlers.IntakeUpdated(statusChanged)
 
       expect(onUpdate).toHaveBeenCalledWith(statusChanged)

@@ -63,7 +63,7 @@ export interface IntakeRealtimeConnection {
 export type IntakeRealtimeUpdateType =
   | 'ActiveStatusChanged'
   | 'BiometryStatusChanged'
-  | 'ProposalStatusChanged'
+  | 'OrderStatusChanged'
 
 export interface IntakeRealtimeUpdate {
   type: IntakeRealtimeUpdateType

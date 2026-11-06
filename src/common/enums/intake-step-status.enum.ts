@@ -1,8 +1,9 @@
+// Etapas do `dateAndStatus` do `GET intake/start`; o array sempre traz as 6, nesta ordem
 export enum IntakeStepStatus {
-  IncludePersonalData = 'IncludePersonalData',
-  IncludeAddress = 'IncludeAddress',
-  ChooseInstallments = 'ChooseInstallments',
-  IncludeCreditCard = 'IncludeCreditCard',
-  AnalyseBiometric = 'AnalyseBiometric',
-  Purchase = 'Purchase',
+  UpdateProfile = 'UpdateProfile',
+  UpsertAddress = 'UpsertAddress',
+  UpdateTerm = 'UpdateTerm',
+  PaymentProfile = 'PaymentProfile',
+  Biometry = 'Biometry',
+  StartSale = 'StartSale',
 }

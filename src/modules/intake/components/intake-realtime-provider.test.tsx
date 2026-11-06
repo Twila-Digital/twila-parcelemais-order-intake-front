@@ -128,7 +128,7 @@ describe('IntakeRealtimeProvider', () => {
 
     act(() =>
       options.onUpdate(
-        update('ActiveStatusChanged', { activeStatus: 'AnalyseBiometric' }),
+        update('ActiveStatusChanged', { activeStatus: 'Biometry' }),
       ),
     )
 
@@ -148,7 +148,7 @@ describe('IntakeRealtimeProvider', () => {
     expect(router.refresh).toHaveBeenCalledTimes(1)
   })
 
-  it.each(['Purchase', null])(
+  it.each(['StartSale', null])(
     'shows the finished screen for %s',
     (activeStatus) => {
       const { options } = renderProvider()
@@ -166,7 +166,7 @@ describe('IntakeRealtimeProvider', () => {
   it('ignores repeated or older messages', () => {
     const { options } = renderProvider()
     const message = update('ActiveStatusChanged', {
-      activeStatus: 'AnalyseBiometric',
+      activeStatus: 'Biometry',
     })
 
     act(() => {
@@ -190,7 +190,7 @@ describe('IntakeRealtimeProvider', () => {
 
     act(() =>
       options.onUpdate(
-        update('BiometryStatusChanged', { transactionStatus: 'Expired' }),
+        update('BiometryStatusChanged', { transactionStatus: 'RETRIED' }),
       ),
     )
 
@@ -200,7 +200,7 @@ describe('IntakeRealtimeProvider', () => {
   })
 
   it('catches up with the start after reconnecting', async () => {
-    intakeService.getStart.mockResolvedValue(startWith('AnalyseBiometric'))
+    intakeService.getStart.mockResolvedValue(startWith('Biometry'))
     const { options } = renderProvider()
 
     await act(async () => options.onConnected())
@@ -234,7 +234,7 @@ describe('IntakeRealtimeProvider', () => {
 
   it('polls the start only while disconnected', async () => {
     vi.useFakeTimers()
-    intakeService.getStart.mockResolvedValue(startWith('AnalyseBiometric'))
+    intakeService.getStart.mockResolvedValue(startWith('Biometry'))
     const { options } = renderProvider()
 
     await act(() => vi.advanceTimersByTimeAsync(20_000))

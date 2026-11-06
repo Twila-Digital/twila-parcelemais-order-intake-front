@@ -44,18 +44,18 @@ describe('requireActiveIntakeStep', () => {
       requireActiveIntakeStep(
         'a/b',
         'dados-pessoais',
-        startWith(IntakeStepStatus.IncludePersonalData),
+        startWith(IntakeStepStatus.UpdateProfile),
       ),
     ).rejects.toThrow('NEXT_REDIRECT /intake/a%2Fb')
   })
 
   it.each([
-    [IntakeStepStatus.IncludePersonalData, 'dados-pessoais'],
-    [IntakeStepStatus.IncludeAddress, 'endereco-cobranca'],
-    [IntakeStepStatus.ChooseInstallments, 'parcelas'],
-    [IntakeStepStatus.IncludeCreditCard, 'cartao'],
-    [IntakeStepStatus.AnalyseBiometric, 'biometria'],
-    [IntakeStepStatus.Purchase, 'pedido-concluido'],
+    [IntakeStepStatus.UpdateProfile, 'dados-pessoais'],
+    [IntakeStepStatus.UpsertAddress, 'endereco-cobranca'],
+    [IntakeStepStatus.UpdateTerm, 'parcelas'],
+    [IntakeStepStatus.PaymentProfile, 'cartao'],
+    [IntakeStepStatus.Biometry, 'biometria'],
+    [IntakeStepStatus.StartSale, 'pedido-concluido'],
     ['SomethingNew', 'etapa-indisponivel'],
   ])('lets the active step %s stay on /%s', async (activeStatus, route) => {
     await requireActiveIntakeStep('abc', route, startWith(activeStatus))
@@ -74,7 +74,7 @@ describe('requireActiveIntakeStep', () => {
     await requireActiveIntakeStep(
       'abc',
       route,
-      startWith(IntakeStepStatus.IncludeAddress, orderStatus),
+      startWith(IntakeStepStatus.UpsertAddress, orderStatus),
     )
 
     expect(redirect).not.toHaveBeenCalled()
@@ -85,10 +85,7 @@ describe('requireActiveIntakeStep', () => {
       requireActiveIntakeStep(
         'abc',
         'cartao',
-        startWith(
-          IntakeStepStatus.IncludeCreditCard,
-          IntakeOrderStatus.Canceled,
-        ),
+        startWith(IntakeStepStatus.PaymentProfile, IntakeOrderStatus.Canceled),
       ),
     ).rejects.toThrow('NEXT_REDIRECT /intake/abc/pedido-cancelado')
   })
@@ -98,7 +95,7 @@ describe('requireActiveIntakeStep', () => {
       requireActiveIntakeStep(
         'abc',
         'cartao',
-        startWith(IntakeStepStatus.ChooseInstallments),
+        startWith(IntakeStepStatus.UpdateTerm),
       ),
     ).rejects.toThrow('NEXT_REDIRECT /intake/abc/parcelas')
   })

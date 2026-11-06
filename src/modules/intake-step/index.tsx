@@ -79,32 +79,32 @@ export async function IntakeStep({ token, route, start }: IntakeStepProps) {
   const screen = { token, header }
 
   switch (status) {
-    case IntakeStepStatus.IncludePersonalData:
+    case IntakeStepStatus.UpdateProfile:
       return (
         <IntakeStepPlaceholder
           header={null}
           {...intakeFlowCopyRecord.personalData}
         />
       )
-    case IntakeStepStatus.IncludeAddress:
+    case IntakeStepStatus.UpsertAddress:
       return (
         <IntakeStepPlaceholder
           header={header}
           {...intakeFlowCopyRecord.address}
         />
       )
-    case IntakeStepStatus.ChooseInstallments:
+    case IntakeStepStatus.UpdateTerm:
       return (
         <IntakeStepPlaceholder
           header={header}
           {...intakeFlowCopyRecord.installments}
         />
       )
-    case IntakeStepStatus.IncludeCreditCard:
+    case IntakeStepStatus.PaymentProfile:
       return (
         <IntakeStepPlaceholder header={header} {...intakeFlowCopyRecord.card} />
       )
-    case IntakeStepStatus.AnalyseBiometric: {
+    case IntakeStepStatus.Biometry: {
       const data = await getIntakeStepData(token, status)
       if (!data) return <StepLoadError header={header} />
       return (

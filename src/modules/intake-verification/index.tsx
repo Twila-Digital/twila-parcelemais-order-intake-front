@@ -39,7 +39,8 @@ import { type CodeFormData, codeSchema } from './schemas/code.schema'
 type Stage = 'channel' | 'code'
 
 const CODE_FIELD_ERRORS: ApiErrorFieldMap<CodeFormData> = {
-  'Intake.CodeIsInvalid': 'code',
+  'Intake.CodeIsRequired': 'code',
+  'Intake.CodeInvalid': 'code',
   'Intake.InvalidOtp': 'code',
 }
 

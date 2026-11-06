@@ -64,7 +64,7 @@ export async function submitIntakeStep(
   const invalid = { ok: false as const, reason: 'invalid-body' as const }
 
   switch (status) {
-    case IntakeStepStatus.IncludePersonalData: {
+    case IntakeStepStatus.UpdateProfile: {
       const parsed = personalDataSchema.safeParse(body)
       if (!parsed.success) return invalid
       const payload: IntakeApiUpdateProfileRequest = {
@@ -74,7 +74,7 @@ export async function submitIntakeStep(
       return send('PUT', 'intake/profile', payload)
     }
 
-    case IntakeStepStatus.IncludeAddress: {
+    case IntakeStepStatus.UpsertAddress: {
       const parsed = addressSchema.safeParse(body)
       if (!parsed.success) return invalid
       const payload: IntakeApiUpsertAddressRequest = {
@@ -87,7 +87,7 @@ export async function submitIntakeStep(
       return send('PUT', 'intake/address', payload)
     }
 
-    case IntakeStepStatus.IncludeCreditCard: {
+    case IntakeStepStatus.PaymentProfile: {
       const parsed = creditCardSchema.safeParse(body)
       if (!parsed.success) return invalid
       const payload: IntakeApiCreatePaymentProfileRequest = parsed.data

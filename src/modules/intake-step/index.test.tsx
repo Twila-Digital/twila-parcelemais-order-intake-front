@@ -54,7 +54,7 @@ describe('IntakeStep', () => {
 
     expect(getIntakeStepData).toHaveBeenCalledWith(
       'abc',
-      IntakeStepStatus.AnalyseBiometric,
+      IntakeStepStatus.Biometry,
     )
     expect(
       screen.getByRole('heading', { name: 'Confirme sua identidade' }),

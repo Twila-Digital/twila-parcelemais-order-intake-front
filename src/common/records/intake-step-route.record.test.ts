@@ -16,11 +16,11 @@ import {
 } from './intake-step-route.record'
 
 const STEP_ROUTES: [IntakeStepStatus, string][] = [
-  [IntakeStepStatus.IncludePersonalData, 'dados-pessoais'],
-  [IntakeStepStatus.IncludeAddress, 'endereco-cobranca'],
-  [IntakeStepStatus.ChooseInstallments, 'parcelas'],
-  [IntakeStepStatus.IncludeCreditCard, 'cartao'],
-  [IntakeStepStatus.AnalyseBiometric, 'biometria'],
+  [IntakeStepStatus.UpdateProfile, 'dados-pessoais'],
+  [IntakeStepStatus.UpsertAddress, 'endereco-cobranca'],
+  [IntakeStepStatus.UpdateTerm, 'parcelas'],
+  [IntakeStepStatus.PaymentProfile, 'cartao'],
+  [IntakeStepStatus.Biometry, 'biometria'],
 ]
 
 const ROUTES_OUTSIDE_STEPS = [
@@ -33,10 +33,24 @@ const ROUTES_OUTSIDE_STEPS = [
 ]
 
 const CLOSED_ORDERS: [IntakeOrderStatus, string][] = [
-  [IntakeOrderStatus.Canceled, INTAKE_CANCELED_ROUTE],
-  [IntakeOrderStatus.UnavailableBalance, INTAKE_CREDIT_DENIED_ROUTE],
   [IntakeOrderStatus.NotAuthorized, INTAKE_CREDIT_DENIED_ROUTE],
+  [IntakeOrderStatus.UnavailableBalance, INTAKE_CREDIT_DENIED_ROUTE],
   [IntakeOrderStatus.AnalysisExpired, INTAKE_CREDIT_DENIED_ROUTE],
+  [IntakeOrderStatus.BiometryRefused, INTAKE_CREDIT_DENIED_ROUTE],
+  [IntakeOrderStatus.Canceled, INTAKE_CANCELED_ROUTE],
+  [IntakeOrderStatus.Purchased, INTAKE_FINISHED_ROUTE],
+  [IntakeOrderStatus.Billing, INTAKE_FINISHED_ROUTE],
+  [IntakeOrderStatus.Done, INTAKE_FINISHED_ROUTE],
+  [IntakeOrderStatus.Frozen, INTAKE_FINISHED_ROUTE],
+  [IntakeOrderStatus.Disbursed, INTAKE_FINISHED_ROUTE],
+]
+
+const ORDERS_FOLLOWING_STEPS = [
+  IntakeOrderStatus.SaleNotStarted,
+  IntakeOrderStatus.WaitingRegistration,
+  IntakeOrderStatus.PendingAuthorization,
+  IntakeOrderStatus.PendingPayment,
+  IntakeOrderStatus.PaymentRefused,
 ]
 
 function startWith(
@@ -57,7 +71,7 @@ describe('getIntakeStepRoute', () => {
     expect(getIntakeStepRoute(status)).toBe(route)
   })
 
-  it.each([null, IntakeStepStatus.Purchase])(
+  it.each([null, IntakeStepStatus.StartSale])(
     'sends %s (every screen done) to the final route',
     (status) => {
       expect(getIntakeStepRoute(status)).toBe(INTAKE_FINISHED_ROUTE)
@@ -99,12 +113,15 @@ describe('isIntakeOrderClosed', () => {
     expect(isIntakeOrderClosed(status)).toBe(true)
   })
 
-  it.each([IntakeOrderStatus.Analysing, IntakeOrderStatus.Approved, null])(
-    'keeps the link open for %s',
-    (status) => {
-      expect(isIntakeOrderClosed(status)).toBe(false)
-    },
-  )
+  it.each([
+    ...ORDERS_FOLLOWING_STEPS,
+    IntakeOrderStatus.Analysing,
+    IntakeOrderStatus.Approved,
+    IntakeOrderStatus.PendingPaymentConfirmation,
+    null,
+  ])('keeps the link open for %s', (status) => {
+    expect(isIntakeOrderClosed(status)).toBe(false)
+  })
 })
 
 describe('getIntakeEntryRoute', () => {
@@ -123,7 +140,7 @@ describe('getIntakeEntryRoute', () => {
     (orderStatus, route) => {
       expect(
         getIntakeEntryRoute(
-          startWith(IntakeStepStatus.ChooseInstallments, orderStatus),
+          startWith(IntakeStepStatus.UpdateTerm, orderStatus),
         ),
       ).toBe(route)
     },
@@ -135,7 +152,7 @@ describe('getIntakeEntryRoute', () => {
   ])('shows the credit screen while the order is %s', (orderStatus, route) => {
     expect(
       getIntakeEntryRoute(
-        startWith(IntakeStepStatus.IncludeAddress, orderStatus),
+        startWith(IntakeStepStatus.UpsertAddress, orderStatus),
       ),
     ).toBe(route)
   })
@@ -145,18 +162,40 @@ describe('getIntakeEntryRoute', () => {
     (orderStatus) => {
       expect(
         getIntakeEntryRoute(
-          startWith(IntakeStepStatus.IncludePersonalData, orderStatus),
+          startWith(IntakeStepStatus.UpdateProfile, orderStatus),
         ),
       ).toBe('dados-pessoais')
     },
   )
+
+  it.each(ORDERS_FOLLOWING_STEPS)(
+    'follows the active step while the order is %s',
+    (orderStatus) => {
+      expect(
+        getIntakeEntryRoute(
+          startWith(IntakeStepStatus.PaymentProfile, orderStatus),
+        ),
+      ).toBe('cartao')
+    },
+  )
+
+  it('shows the finished screen once the purchase was sent', () => {
+    expect(
+      getIntakeEntryRoute(
+        startWith(
+          IntakeStepStatus.StartSale,
+          IntakeOrderStatus.PendingPaymentConfirmation,
+        ),
+      ),
+    ).toBe(INTAKE_FINISHED_ROUTE)
+  })
 
   it('follows the steps when the API sends no order', () => {
     expect(
       getIntakeEntryRoute({
         order: null,
         dateAndStatus: {
-          activeStatus: IntakeStepStatus.IncludeCreditCard,
+          activeStatus: IntakeStepStatus.PaymentProfile,
           steps: [],
         },
       }),

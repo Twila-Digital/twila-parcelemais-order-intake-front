@@ -1,6 +1,7 @@
 import { act, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { IntakeBiometryStatus } from '@/common/enums/intake-biometry-status.enum'
 import type { IntakeBiometryStepData } from '@/domain/intake.domain'
 import { renderWithProviders } from '@/tests/render-with-providers'
 import { IntakeBiometrics } from '.'
@@ -55,7 +56,7 @@ describe('IntakeBiometrics', () => {
     act(() =>
       queryClient.setQueryData(['intake-step-data', 'abc', 'biometrics'], {
         ...SESSION,
-        transactionStatus: 'Reproved',
+        transactionStatus: IntakeBiometryStatus.Retried,
       }),
     )
 
@@ -66,7 +67,10 @@ describe('IntakeBiometrics', () => {
   })
 
   it('offers a new attempt after a reproved verification', () => {
-    renderScreen({ ...SESSION, transactionStatus: 'Reproved' })
+    renderScreen({
+      ...SESSION,
+      transactionStatus: IntakeBiometryStatus.Retried,
+    })
 
     expect(
       screen.getByText('Sua verificação não foi aprovada'),

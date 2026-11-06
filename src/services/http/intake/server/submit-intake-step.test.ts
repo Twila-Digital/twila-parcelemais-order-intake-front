@@ -17,7 +17,7 @@ describe('submitIntakeStep', () => {
   it('completes the profile with the birth date in Brasília time', async () => {
     const result = await submitIntakeStep(
       'abc',
-      IntakeStepStatus.IncludePersonalData,
+      IntakeStepStatus.UpdateProfile,
       {
         name: ' Maria Silva ',
         email: 'maria@example.com',
@@ -43,7 +43,7 @@ describe('submitIntakeStep', () => {
   it('saves the billing address in Brazil', async () => {
     await submitIntakeStep(
       'abc',
-      IntakeStepStatus.IncludeAddress,
+      IntakeStepStatus.UpsertAddress,
       {
         zipCode: '01310100',
         street: 'Avenida Paulista',
@@ -77,7 +77,7 @@ describe('submitIntakeStep', () => {
   it('creates the payment profile with the gateway token', async () => {
     await submitIntakeStep(
       'abc',
-      IntakeStepStatus.IncludeCreditCard,
+      IntakeStepStatus.PaymentProfile,
       { gatewayToken: 'tok_123', saveForFutureUses: true },
       'jwt',
     )
@@ -94,9 +94,9 @@ describe('submitIntakeStep', () => {
   })
 
   it.each([
-    [IntakeStepStatus.IncludePersonalData, { name: 'Maria', email: 'x' }],
-    [IntakeStepStatus.IncludeAddress, { zipCode: '0131', state: 'São Paulo' }],
-    [IntakeStepStatus.IncludeCreditCard, { gatewayToken: '' }],
+    [IntakeStepStatus.UpdateProfile, { name: 'Maria', email: 'x' }],
+    [IntakeStepStatus.UpsertAddress, { zipCode: '0131', state: 'São Paulo' }],
+    [IntakeStepStatus.PaymentProfile, { gatewayToken: '' }],
   ])('rejects an invalid body for %s', async (status, body) => {
     expect(await submitIntakeStep('abc', status, body, 'jwt')).toEqual({
       ok: false,
@@ -106,9 +106,9 @@ describe('submitIntakeStep', () => {
   })
 
   it.each([
-    IntakeStepStatus.ChooseInstallments,
-    IntakeStepStatus.AnalyseBiometric,
-    IntakeStepStatus.Purchase,
+    IntakeStepStatus.UpdateTerm,
+    IntakeStepStatus.Biometry,
+    IntakeStepStatus.StartSale,
   ])('has nothing to submit for %s', async (status) => {
     expect(await submitIntakeStep('abc', status, {}, 'jwt')).toEqual({
       ok: false,

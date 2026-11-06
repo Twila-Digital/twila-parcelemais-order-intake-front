@@ -90,27 +90,47 @@ AWS Amplify, com o workflow reutilizável `twila-front-pipelines` (`.github/work
 
 > A infra do Parcele Mais (apps Amplify, domínios, `terraform.tfvars`, Datadog) fica em tarefa própria.
 
+## Contrato das etapas
+
+Fonte: `swagger.json` (endpoints `/v1/intake/*`) e respostas do backend para os campos que o swagger tipa como `string`.
+
+O `GET intake/start` devolve `orderId`, `order { status, externalStatus }` e `dateAndStatus`, que sempre traz as 6 etapas, nesta ordem:
+
+| Etapa | Status | Rota | Path no BFF | API |
+| --- | --- | --- | --- | --- |
+| Dados pessoais (com o consentimento da consulta de crédito) | `UpdateProfile` | `dados-pessoais` | `personal-data` | `PUT intake/profile` |
+| Endereço | `UpsertAddress` | `endereco-cobranca` | `address` | `PUT intake/address` |
+| Parcelas | `UpdateTerm` | `parcelas` | `installments` | — |
+| Cartão | `PaymentProfile` | `cartao` | `credit-card` | `POST intake/payment-profile` |
+| Biometria | `Biometry` | `biometria` | `biometrics` | `GET intake/biometry` |
+| Compra | `StartSale` | sem tela (vai para `pedido-concluido`) | `purchase` | `POST intake/sale` |
+
+O `order.status` decide as telas fora das etapas:
+
+| Situação | `order.status` | Start | Tela |
+| --- | --- | --- | --- |
+| Antes da análise | `SaleNotStarted`, `WaitingRegistration`, `PendingAuthorization` | 200 | etapa ativa |
+| Análise | `Analysing` | 200 | `analise-credito` (depois dos dados pessoais) |
+| Aprovado | `Approved` | 200 | `credito-aprovado` (depois dos dados pessoais) |
+| Aprovado | `PendingPayment` | 200 | etapa ativa |
+| Pagamento recusado | `PaymentRefused` | 200 | etapa ativa |
+| Compra disparada | `PendingPaymentConfirmation` | 200 | `pedido-concluido` |
+| Recusado | `NotAuthorized`, `UnavailableBalance`, `AnalysisExpired`, `BiometryRefused` | 410 | link encerrado |
+| Cancelado | `Canceled` | 410 | link encerrado |
+| Concluído | `Purchased`, `Billing`, `Done`, `Frozen`, `Disbursed` | 410 | link encerrado |
+
+Erros vêm como ProblemDetails com o código em `type` (ex.: `Intake.InviteClosed`); em validação, `type` é `ValidationError` e os códigos ficam em `errors[]` (`code`, `message`). Em todas as rotas com convite: 404 `Intake.InviteNotFound` e 410 `Intake.InviteClosed`; nas rotas com o Bearer do verify-code: 403 `Intake.TokenPhoneMismatch`.
+
 ## Pendências com backend/produto
 
-### Contrato das etapas (fonte: `swagger.json`, endpoints `/v1/intake/*`)
-
-O `GET intake/start` devolve `orderId`, `order { status, externalStatus }` e `dateAndStatus`, com as etapas: dados pessoais (com o consentimento da consulta de crédito), endereço, parcelas, cartão, biometria e compra. O swagger **não lista os nomes dos status** (`activeStatus` e `steps[].status` são `string`), então os de `IntakeStepStatus` ainda são **provisórios**:
-
-| Etapa | Status provisório | Rota | Path no BFF | API |
-| --- | --- | --- | --- | --- |
-| Dados pessoais | `IncludePersonalData` | `dados-pessoais` | `personal-data` | `PUT intake/profile` |
-| Endereço | `IncludeAddress` | `endereco-cobranca` | `address` | `PUT intake/address` |
-| Parcelas | `ChooseInstallments` | `parcelas` | `installments` | — |
-| Cartão | `IncludeCreditCard` | `cartao` | `credit-card` | `POST intake/payment-profile` |
-| Biometria | `AnalyseBiometric` | `biometria` | `biometrics` | `GET intake/biometry` |
-| Compra | `Purchase` | sem tela (vai para `pedido-concluido`) | `purchase` | `POST intake/sale` |
-
-- **Nomes dos status** das etapas: confirmar com o backend.
+- **Telas de crédito negado e pedido cancelado:** o start responde 410 (`Intake.InviteClosed`) para recusado, cancelado e concluído, sem dizer qual. O front cai em "Esse pedido foi encerrado" e as telas `credito-negado` e `pedido-cancelado` (Figma 1.2.1 e 1.7.1) não aparecem. Precisa de um `type` por motivo no 410 (ou 200 com o status).
+- **`Approved` x `PendingPayment`:** o front assume que `Approved` é "a loja vai iniciar sua compra" e que, quando a loja inicia, o pedido vai para `PendingPayment` e segue pelas etapas. Confirmar.
+- **`PUT intake/profile`:** a API cobra `Idempotency-Key` (`Request.IdempotencyKeyRequired`) e o IP da decisão (`Customer.DecisionIpIsRequired`), que não estão no swagger. Como a chamada sai do servidor do front, falta combinar como o IP do cliente chega.
 - **Parcelas:** não há endpoint de intake para simular e escolher as parcelas (só `orders/simulate` e `orders/term`, fora do intake).
-- **Compra:** `POST intake/sale` exige o header `Idempotency-Key`; falta definir quando o front chama (ao fim da biometria?) e o BFF ainda não envia.
-- **Análise de crédito e telas finais** saem de `order.status` (mesmos valores do `OrderStatus` do backoffice do CS), depois dos dados pessoais: `Analysing` → `analise-credito`, `Approved` → `credito-aprovado` (Figma: "a loja vai iniciar sua compra"), `Canceled` → `pedido-cancelado`, `UnavailableBalance`/`NotAuthorized`/`AnalysisExpired` → `credito-negado`. Confirmar os status de recusa e qual status indica que a loja iniciou a compra (o front assume que o pedido deixa de ser `Approved` e segue pelo `activeStatus`).
-- **Tempo real:** o hub do SignalR não está no swagger. O front ainda espera `ProposalStatusChanged` (com `data.status` = status do pedido) e `orderId` no evento; confirmar os nomes.
+- **Compra:** `POST intake/sale` exige `Idempotency-Key`; falta definir quando o front chama (ao fim da biometria?).
+- **Biometria:** `RETRIED` (reprovada e reprocessada) tem um bug conhecido do lado do backend.
+- **Tempo real:** o hub do SignalR não está no swagger. O front espera `ProposalStatusChanged` (com `data.status` = status do pedido) e `orderId` no evento; confirmar os nomes.
 - **Link mágico:** `intake/access` (rota `?acesso=`) não aparece no swagger.
-- **Senha** em `PUT intake/profile`: a API exige, mas a tela 1.2 do Figma não tem campo de senha. O BFF só exige que venha preenchida.
-- **Dados pessoais (Figma 1.2):** a tela tem Nome e Sobrenome (a API tem só `name`), CPF (a API usa o do convite) e Telefone desabilitado (o start não devolve). Confirmar com o backend.
+- **Senha** em `PUT intake/profile`: a API exige, mas a tela 1.2 do Figma não tem campo de senha.
+- **Dados pessoais (Figma 1.2):** a tela tem Nome e Sobrenome (a API tem só `name`), CPF (a API usa o do convite) e Telefone desabilitado (o start não devolve).
 - **Crédito negado (Figma 1.2.1):** o título no Figma é "Tudo certo!"; confirmar com produto.

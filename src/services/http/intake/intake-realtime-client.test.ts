@@ -196,7 +196,7 @@ describe('IntakeRealtimeClient', () => {
       await flush()
       const [connection] = signalr.connections
       const activeStatus = update('ActiveStatusChanged', {
-        activeStatus: 'AnalyseBiometric',
+        activeStatus: 'Biometry',
       })
       connection.handlers.IntakeUpdated(activeStatus)
       connection.handlers.IntakeUpdated(

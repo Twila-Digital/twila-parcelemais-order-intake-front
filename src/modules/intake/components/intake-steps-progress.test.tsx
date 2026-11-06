@@ -16,7 +16,7 @@ const steps = [
     completedAt: '2026-10-16T14:42:09.0193699+00:00',
   },
   {
-    status: IntakeStepStatus.AnalyseBiometric,
+    status: IntakeStepStatus.Biometry,
     description: 'Biometria e assinatura',
     isCompleted: false,
     completedAt: null,
@@ -33,7 +33,7 @@ async function openSteps() {
   render(
     <IntakeStepsProgress
       steps={steps}
-      activeStatus={IntakeStepStatus.AnalyseBiometric}
+      activeStatus={IntakeStepStatus.Biometry}
     />,
   )
   await userEvent.click(screen.getByRole('button', { name: 'Ver etapas' }))
@@ -45,7 +45,7 @@ describe('IntakeStepsProgress', () => {
     render(
       <IntakeStepsProgress
         steps={steps}
-        activeStatus={IntakeStepStatus.AnalyseBiometric}
+        activeStatus={IntakeStepStatus.Biometry}
       />,
     )
 

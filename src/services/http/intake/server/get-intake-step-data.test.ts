@@ -32,9 +32,10 @@ describe('getIntakeStepData', () => {
       data: biometry,
     })
 
-    expect(
-      await getIntakeStepData('abc', IntakeStepStatus.AnalyseBiometric),
-    ).toEqual({ ...biometry, isAvailable: true })
+    expect(await getIntakeStepData('abc', IntakeStepStatus.Biometry)).toEqual({
+      ...biometry,
+      isAvailable: true,
+    })
     expect(intakeServerFetch).toHaveBeenCalledWith('abc', 'intake/biometry', {
       accessToken: 'jwt',
     })
@@ -47,9 +48,9 @@ describe('getIntakeStepData', () => {
       problem: { status: 409, type: 'Intake.BiometryNotAvailable' },
     })
 
-    expect(
-      await getIntakeStepData('abc', IntakeStepStatus.AnalyseBiometric),
-    ).toEqual(expect.objectContaining({ isAvailable: false, sessionUrl: null }))
+    expect(await getIntakeStepData('abc', IntakeStepStatus.Biometry)).toEqual(
+      expect.objectContaining({ isAvailable: false, sessionUrl: null }),
+    )
   })
 
   it('returns null when the biometry fails', async () => {
@@ -59,8 +60,6 @@ describe('getIntakeStepData', () => {
       problem: { status: 400, type: 'Intake.BiometryUnexpectedError' },
     })
 
-    expect(
-      await getIntakeStepData('abc', IntakeStepStatus.AnalyseBiometric),
-    ).toBeNull()
+    expect(await getIntakeStepData('abc', IntakeStepStatus.Biometry)).toBeNull()
   })
 })

@@ -1,3 +1,5 @@
+import type { IntakeBiometryStatus } from '@/common/enums/intake-biometry-status.enum'
+import type { IntakeOrderExternalStatus } from '@/common/enums/intake-order-external-status.enum'
 import type { IntakeOrderStatus } from '@/common/enums/intake-order-status.enum'
 import type { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 
@@ -10,7 +12,7 @@ export interface IntakeStep {
 
 export interface IntakeOrder {
   status: IntakeOrderStatus | null
-  externalStatus: string | null
+  externalStatus: IntakeOrderExternalStatus | null
 }
 
 export interface IntakeOrderSummary {
@@ -48,7 +50,7 @@ export interface IntakeVerifyTokenRequest {
 
 export interface IntakeBiometryStepData {
   isCompleted: boolean
-  transactionStatus: string | null
+  transactionStatus: IntakeBiometryStatus | null
   sessionUrl: string | null
   isAvailable: boolean
 }

@@ -1,12 +1,6 @@
-'use client'
-
-import { faUpRightFromSquare } from '@fortawesome/pro-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button } from '@twila-digital/components/button'
 import { StatusScreen } from '@/common/components/status-screen'
-import { useFieldSize } from '@/common/hooks/use-field-size'
-import { APP_INFO } from '@/constants/app-info'
 import type { IntakeUnavailableReason } from '@/domain/intake.domain'
+import { IntakeSupportButton } from './intake-support-button'
 
 const MESSAGES: Record<
   IntakeUnavailableReason,
@@ -32,24 +26,13 @@ export function IntakeUnavailable({
 }: {
   reason: IntakeUnavailableReason
 }) {
-  const fieldSize = useFieldSize()
-
   if (reason !== 'closed') {
     return <StatusScreen tone='warning' {...MESSAGES[reason]} />
   }
 
   return (
     <StatusScreen tone='danger' {...MESSAGES.closed}>
-      <Button size={fieldSize} fullWidth asChild>
-        <a
-          href={APP_INFO.whatsappLink}
-          target='_blank'
-          rel='noopener noreferrer'
-        >
-          Falar com o suporte
-          <FontAwesomeIcon icon={faUpRightFromSquare} aria-hidden />
-        </a>
-      </Button>
+      <IntakeSupportButton />
     </StatusScreen>
   )
 }

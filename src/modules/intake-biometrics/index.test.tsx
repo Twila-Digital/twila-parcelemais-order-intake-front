@@ -1,6 +1,7 @@
 import { act, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
+import { IntakeBiometryStatus } from '@/common/enums/intake-biometry-status.enum'
 import type { IntakeBiometryStepData } from '@/domain/intake.domain'
 import { renderWithProviders } from '@/tests/render-with-providers'
 import { IntakeBiometrics } from '.'
@@ -35,10 +36,10 @@ describe('IntakeBiometrics', () => {
     renderScreen()
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Fazer biometria e assinar' }),
+      screen.getByRole('button', { name: 'Fazer biometria' }),
     )
 
-    const iframe = screen.getByTitle('Biometria e assinatura')
+    const iframe = screen.getByTitle('Biometria')
     expect(iframe).toHaveAttribute('src', SESSION.sessionUrl)
     expect(iframe.parentElement).toHaveClass('fixed', 'inset-0')
     expect(document.body.style.overflow).toBe('hidden')
@@ -48,27 +49,28 @@ describe('IntakeBiometrics', () => {
   it('closes the Didit session when the verification is reproved', async () => {
     const { queryClient } = renderScreen()
     await userEvent.click(
-      screen.getByRole('button', { name: 'Fazer biometria e assinar' }),
+      screen.getByRole('button', { name: 'Fazer biometria' }),
     )
-    expect(screen.getByTitle('Biometria e assinatura')).toBeInTheDocument()
+    expect(screen.getByTitle('Biometria')).toBeInTheDocument()
 
     act(() =>
       queryClient.setQueryData(['intake-step-data', 'abc', 'biometrics'], {
         ...SESSION,
-        transactionStatus: 'Reproved',
+        transactionStatus: IntakeBiometryStatus.Retried,
       }),
     )
 
     expect(
       await screen.findByText('Sua verificação não foi aprovada'),
     ).toBeInTheDocument()
-    expect(
-      screen.queryByTitle('Biometria e assinatura'),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTitle('Biometria')).not.toBeInTheDocument()
   })
 
   it('offers a new attempt after a reproved verification', () => {
-    renderScreen({ ...SESSION, transactionStatus: 'Reproved' })
+    renderScreen({
+      ...SESSION,
+      transactionStatus: IntakeBiometryStatus.Retried,
+    })
 
     expect(
       screen.getByText('Sua verificação não foi aprovada'),

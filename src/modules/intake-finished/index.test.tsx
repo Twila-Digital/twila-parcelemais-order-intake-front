@@ -6,50 +6,28 @@ vi.mock('@/env', () => ({
   env: { NEXT_PUBLIC_PARCELEMAIS_URL: 'https://staging.parcelemais.com.br/' },
 }))
 
-function renderFinished({
-  hasWhiteLabel = false,
-}: {
-  hasWhiteLabel?: boolean
-} = {}) {
-  render(
-    <IntakeFinished
-      header={null}
-      proposalId='d32e3820-1779-40fc-81da-d127de143aea'
-      hasWhiteLabel={hasWhiteLabel}
-    />,
-  )
-}
-
 describe('IntakeFinished', () => {
-  it('links to the proposal in the Parcele Mais panel of the environment', () => {
-    renderFinished()
+  it('links to the order in the Parcele Mais site of the environment', () => {
+    render(
+      <IntakeFinished
+        header={null}
+        orderId='d32e3820-1779-40fc-81da-d127de143aea'
+      />,
+    )
 
     expect(
-      screen.getByRole('heading', {
-        name: 'Proposta finalizada com sucesso! 🎉',
-      }),
+      screen.getByRole('heading', { name: 'Pedido concluído 🎉' }),
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/Você finalizou sua proposta e está tudo certo\./),
+      screen.getByText(/Seu pedido foi concluído e está tudo certo\./),
     ).toHaveTextContent(
-      'acessar nosso site para conhecer mais sobre o Parcele Mais',
+      'acessar nosso site para conhecer mais sobre o Parcele+',
     )
-    const link = screen.getByRole('link', { name: 'Acessar Parcele Mais' })
+    const link = screen.getByRole('link', { name: 'Acessar Parcele+' })
     expect(link).toHaveAttribute(
       'href',
-      'https://staging.parcelemais.com.br/painel/propostas/d32e3820-1779-40fc-81da-d127de143aea',
+      'https://staging.parcelemais.com.br/cliente/pedido/d32e3820-1779-40fc-81da-d127de143aea',
     )
     expect(link).toHaveAttribute('target', '_blank')
-  })
-
-  it('hides the Parcele Mais link and mention with a white label', () => {
-    renderFinished({ hasWhiteLabel: true })
-
-    expect(
-      screen.queryByRole('link', { name: 'Acessar Parcele Mais' }),
-    ).not.toBeInTheDocument()
-    expect(
-      screen.getByText(/Você já pode fechar esta tela\./),
-    ).not.toHaveTextContent('Parcele Mais')
   })
 })

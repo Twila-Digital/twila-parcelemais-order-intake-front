@@ -5,7 +5,6 @@ import { isMobileUserAgent } from '@/common/lib/device'
 import { IntakeLoadingProvider } from '@/modules/intake/components/intake-loading-provider'
 import { IntakeRealtimeProvider } from '@/modules/intake/components/intake-realtime-provider'
 import { IntakeUnavailable } from '@/modules/intake/components/intake-unavailable'
-import { IntakeWhiteLabelStyle } from '@/modules/intake/components/intake-white-label-style'
 import { getIntakeStart } from '@/services/http/intake/server/get-intake-start'
 import { getIntakeAccessToken } from '@/services/http/intake/server/intake-session'
 
@@ -28,13 +27,11 @@ export default async function IntakeLayout({
     )
   }
 
-  const { whiteLabel } = start.data
   const hasSession = Boolean(await getIntakeAccessToken(token))
 
   return (
     <FieldSizeProvider initialSize={fieldSize}>
-      <IntakeWhiteLabelStyle whiteLabel={whiteLabel} />
-      <PageShell logoUrl={whiteLabel?.applied ? whiteLabel.logoUrl : null}>
+      <PageShell>
         <IntakeLoadingProvider>
           {hasSession ? (
             <IntakeRealtimeProvider token={token}>

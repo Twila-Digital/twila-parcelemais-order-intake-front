@@ -9,26 +9,20 @@ import { useFieldSize } from '@/common/hooks/use-field-size'
 import { intakeFlowCopyRecord } from '@/common/records/intake-flow-copy.record'
 import { env } from '@/env'
 
-const CLOSE_HINT = 'Você já pode fechar esta tela.'
 const CLOSE_OR_VISIT_HINT =
-  'Você já pode fechar esta tela ou acessar nosso site para conhecer mais sobre o Parcele Mais.'
+  'Você já pode fechar esta tela ou acessar nosso site para conhecer mais sobre o Parcele+.'
 
-function getSiteUrl(proposalId: string) {
+function getSiteUrl(orderId: string) {
   const baseUrl = env.NEXT_PUBLIC_PARCELEMAIS_URL.replace(/\/+$/, '')
-  return `${baseUrl}/painel/propostas/${encodeURIComponent(proposalId)}`
+  return `${baseUrl}/cliente/pedido/${encodeURIComponent(orderId)}`
 }
 
 type IntakeFinishedProps = {
   header: ReactNode
-  proposalId: string
-  hasWhiteLabel: boolean
+  orderId: string
 }
 
-export function IntakeFinished({
-  header,
-  proposalId,
-  hasWhiteLabel,
-}: IntakeFinishedProps) {
+export function IntakeFinished({ header, orderId }: IntakeFinishedProps) {
   const fieldSize = useFieldSize()
   const copy = intakeFlowCopyRecord.finished
 
@@ -40,22 +34,16 @@ export function IntakeFinished({
         <>
           {copy.description}
           <br />
-          {hasWhiteLabel ? CLOSE_HINT : CLOSE_OR_VISIT_HINT}
+          {CLOSE_OR_VISIT_HINT}
         </>
       }
     >
-      {!hasWhiteLabel && (
-        <Button size={fieldSize} fullWidth asChild>
-          <a
-            href={getSiteUrl(proposalId)}
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Acessar Parcele Mais
-            <FontAwesomeIcon icon={faUpRightFromSquare} aria-hidden />
-          </a>
-        </Button>
-      )}
+      <Button size={fieldSize} fullWidth asChild>
+        <a href={getSiteUrl(orderId)} target='_blank' rel='noopener noreferrer'>
+          Acessar Parcele+
+          <FontAwesomeIcon icon={faUpRightFromSquare} aria-hidden />
+        </a>
+      </Button>
     </StatusScreen>
   )
 }

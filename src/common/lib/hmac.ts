@@ -3,7 +3,7 @@ import { createHmac, randomUUID } from 'node:crypto'
 
 type SignIntakeRequestInput = {
   secret: string
-  method: 'GET' | 'POST'
+  method: 'GET' | 'POST' | 'PUT'
   pathAndQuery: string
   token: string
   body?: string

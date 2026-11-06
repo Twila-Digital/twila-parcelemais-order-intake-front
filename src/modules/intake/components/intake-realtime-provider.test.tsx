@@ -68,7 +68,7 @@ const update = (
   occurredAt = '2026-10-16T13:05:00.000Z',
 ): IntakeRealtimeUpdate => ({
   type,
-  proposalId: 'p1',
+  orderId: 'o1',
   occurredAt,
   data,
 })
@@ -128,7 +128,7 @@ describe('IntakeRealtimeProvider', () => {
 
     act(() =>
       options.onUpdate(
-        update('ActiveStatusChanged', { activeStatus: 'AnalyseBiometric' }),
+        update('ActiveStatusChanged', { activeStatus: 'Biometry' }),
       ),
     )
 
@@ -148,7 +148,7 @@ describe('IntakeRealtimeProvider', () => {
     expect(router.refresh).toHaveBeenCalledTimes(1)
   })
 
-  it.each(['Payment', 'Finished'])(
+  it.each(['StartSale', null])(
     'shows the finished screen for %s',
     (activeStatus) => {
       const { options } = renderProvider()
@@ -158,7 +158,7 @@ describe('IntakeRealtimeProvider', () => {
       )
 
       expect(router.replace).toHaveBeenCalledWith(
-        '/intake/abc/proposta-finalizada',
+        '/intake/abc/pedido-concluido',
       )
     },
   )
@@ -166,7 +166,7 @@ describe('IntakeRealtimeProvider', () => {
   it('ignores repeated or older messages', () => {
     const { options } = renderProvider()
     const message = update('ActiveStatusChanged', {
-      activeStatus: 'AnalyseBiometric',
+      activeStatus: 'Biometry',
     })
 
     act(() => {
@@ -190,7 +190,7 @@ describe('IntakeRealtimeProvider', () => {
 
     act(() =>
       options.onUpdate(
-        update('BiometryStatusChanged', { transactionStatus: 'Expired' }),
+        update('BiometryStatusChanged', { transactionStatus: 'RETRIED' }),
       ),
     )
 
@@ -200,7 +200,7 @@ describe('IntakeRealtimeProvider', () => {
   })
 
   it('catches up with the start after reconnecting', async () => {
-    intakeService.getStart.mockResolvedValue(startWith('AnalyseBiometric'))
+    intakeService.getStart.mockResolvedValue(startWith('Biometry'))
     const { options } = renderProvider()
 
     await act(async () => options.onConnected())
@@ -211,22 +211,18 @@ describe('IntakeRealtimeProvider', () => {
     expect(router.refresh).toHaveBeenCalledTimes(1)
   })
 
-  it('follows the start when the proposal status changes', async () => {
+  it('follows the start when the order status changes', async () => {
     intakeService.getStart.mockResolvedValue(startWith(null))
     const { options } = renderProvider()
 
     await act(async () =>
-      options.onUpdate(
-        update('ProposalStatusChanged', { status: 'Analysing' }),
-      ),
+      options.onUpdate(update('OrderStatusChanged', { status: 'Analysing' })),
     )
 
-    expect(router.replace).toHaveBeenCalledWith(
-      '/intake/abc/proposta-finalizada',
-    )
+    expect(router.replace).toHaveBeenCalledWith('/intake/abc/pedido-concluido')
   })
 
-  it('shows the closed proposal when the link ends', () => {
+  it('shows the closed order when the link ends', () => {
     const { options } = renderProvider()
 
     act(() => options.onClosed())
@@ -236,7 +232,7 @@ describe('IntakeRealtimeProvider', () => {
 
   it('polls the start only while disconnected', async () => {
     vi.useFakeTimers()
-    intakeService.getStart.mockResolvedValue(startWith('AnalyseBiometric'))
+    intakeService.getStart.mockResolvedValue(startWith('Biometry'))
     const { options } = renderProvider()
 
     await act(() => vi.advanceTimersByTimeAsync(20_000))

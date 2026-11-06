@@ -54,11 +54,11 @@ export function IntakeStepsProgress({
   const currentLabel =
     label ??
     activeStep?.description ??
-    (activeStatus === null ? 'Proposta finalizada' : 'Proposta')
+    (activeStatus === null ? 'Pedido concluído' : 'Pedido')
 
   return (
     <div className='flex flex-col gap-lg'>
-      <ol className='flex gap-sm' aria-label='Progresso da proposta'>
+      <ol className='flex gap-sm' aria-label='Progresso do pedido'>
         {steps.map((step) => (
           <li
             key={step.status}
@@ -96,7 +96,7 @@ export function IntakeStepsProgress({
       {isOpen && (
         <ul
           id={listId}
-          aria-label='Etapas da proposta'
+          aria-label='Etapas do pedido'
           className='flex flex-col gap-sm'
         >
           {steps.map((step) => {

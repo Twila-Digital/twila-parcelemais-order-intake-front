@@ -67,7 +67,7 @@ describe('POST realtime/ticket', () => {
     expect(session.clearIntakeAccessToken).toHaveBeenCalledWith('abc')
   })
 
-  it('passes a closed proposal through', async () => {
+  it('passes a closed order through', async () => {
     intakeServerFetch.mockResolvedValue({
       ok: false,
       status: 410,

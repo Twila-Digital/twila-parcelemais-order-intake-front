@@ -4,41 +4,44 @@ import { faChevronDown, faChevronUp } from '@fortawesome/pro-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Fragment, useId } from 'react'
 import { useBoolean } from '@/common/hooks/use-boolean'
-import { formatBrazilianDate } from '@/common/utils/date'
 import { formatter } from '@/common/utils/formatter'
-import type { IntakeProposalSummary } from '@/domain/intake.domain'
+import type { IntakeOrderSummary } from '@/domain/intake.domain'
 
-type IntakeProposalCardProps = {
-  summary: IntakeProposalSummary
+type IntakeOrderCardProps = {
+  summary: IntakeOrderSummary
 }
 
-export function IntakeProposalCard({ summary }: IntakeProposalCardProps) {
+export function IntakeOrderCard({ summary }: IntakeOrderCardProps) {
   const detailsId = useId()
   const [isOpen, { toggle }] = useBoolean(false)
   const { formatCurrencyBRL } = formatter
-  const createdAt = formatBrazilianDate(summary.createdAt)
+  const { installments } = summary
 
   const details = [
-    ['Valor financiado', formatCurrencyBRL(summary.financedValue)],
-    [
-      'Parcelas',
-      `${summary.installments.count}x de ${formatCurrencyBRL(summary.installments.value)}`,
-    ],
+    ['Valor do pedido', formatCurrencyBRL(summary.orderAmount)],
+    ...(installments
+      ? [
+          [
+            'Parcelas',
+            `${installments.count}x de ${formatCurrencyBRL(installments.value)}`,
+          ],
+        ]
+      : []),
   ]
 
   return (
     <section
-      aria-label='Resumo da proposta'
+      aria-label='Resumo do pedido'
       className='flex flex-col gap-lg rounded-sm border border-gray-3 bg-white p-md'
     >
       <div className='flex items-center gap-sm'>
         <div className='flex flex-1 items-center justify-between gap-sm'>
           <p className='font-semibold tablet:font-medium tablet:text-body-16 text-body-14'>
-            Proposta {summary.proposalNumber}
+            Pedido {summary.orderNumber}
           </p>
-          {createdAt && (
-            <p className='whitespace-nowrap text-body-12 text-gray-9'>
-              {createdAt}
+          {summary.establishmentName && (
+            <p className='truncate text-body-12 text-gray-9'>
+              {summary.establishmentName}
             </p>
           )}
         </div>
@@ -47,7 +50,7 @@ export function IntakeProposalCard({ summary }: IntakeProposalCardProps) {
           aria-expanded={isOpen}
           aria-controls={detailsId}
           aria-label={
-            isOpen ? 'Ocultar valores da proposta' : 'Ver valores da proposta'
+            isOpen ? 'Ocultar valores do pedido' : 'Ver valores do pedido'
           }
           onClick={toggle}
           className='flex size-8 shrink-0 cursor-pointer items-center justify-center text-body-14 text-gray-11'

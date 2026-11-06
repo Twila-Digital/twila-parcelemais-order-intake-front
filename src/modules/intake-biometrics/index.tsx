@@ -4,6 +4,7 @@ import { Alert } from '@twila-digital/components/alert'
 import { Button } from '@twila-digital/components/button'
 import { useEffect, useRef, useState } from 'react'
 import { StatusScreen } from '@/common/components/status-screen'
+import { IntakeBiometryStatus } from '@/common/enums/intake-biometry-status.enum'
 import { IntakeStepStatus } from '@/common/enums/intake-step-status.enum'
 import { useFieldSize } from '@/common/hooks/use-field-size'
 import { intakeStepApiPathRecord } from '@/common/records/intake-step-api-path.record'
@@ -16,11 +17,9 @@ import { useIntakeRealtime } from '@/modules/intake/hooks/use-intake-realtime'
 import type { IntakeStepScreenProps } from '@/modules/intake/types/intake-step-screen'
 import { useIntakeStepDataQuery } from '@/services/http/intake/use-intake-service'
 
-const STEP_PATH = intakeStepApiPathRecord[IntakeStepStatus.AnalyseBiometric]
+const STEP_PATH = intakeStepApiPathRecord[IntakeStepStatus.Biometry]
 
 const POLLING_INTERVAL_IN_MILLISECONDS = 5 * ONE_SECOND_IN_MILLISECONDS
-
-const REPROVED_STATUS = 'reproved'
 
 type IntakeBiometricsProps = IntakeStepScreenProps<IntakeBiometryStepData> & {
   title: string
@@ -45,12 +44,8 @@ export function IntakeBiometrics({
   })
   const biometry = query.data ?? data
   const { refetch } = query
-  const isReproved =
-    biometry.transactionStatus?.toLowerCase() === REPROVED_STATUS
-  const { advance } = useAdvanceIntakeStep(
-    token,
-    IntakeStepStatus.AnalyseBiometric,
-  )
+  const isReproved = biometry.transactionStatus === IntakeBiometryStatus.Retried
+  const { advance } = useAdvanceIntakeStep(token, IntakeStepStatus.Biometry)
   useEffect(() => {
     if (biometry.isCompleted) advance()
   }, [biometry.isCompleted, advance])
@@ -90,7 +85,7 @@ export function IntakeBiometrics({
         tone='info'
         header={header}
         title='Conclua as etapas anteriores'
-        description='A biometria fica disponível depois das etapas anteriores. Volte para o WhatsApp para seguir com sua proposta.'
+        description='A biometria fica disponível depois das etapas anteriores. Volte para o WhatsApp para seguir com seu pedido.'
       />
     )
   }
@@ -111,7 +106,7 @@ export function IntakeBiometrics({
       <div className='fixed inset-0 z-50 bg-gray-1'>
         <iframe
           src={biometry.sessionUrl}
-          title='Biometria e assinatura'
+          title='Biometria'
           allow='camera; microphone; fullscreen; autoplay; encrypted-media'
           allowFullScreen
           className='block h-dvh w-screen border-0'
@@ -129,7 +124,7 @@ export function IntakeBiometrics({
       largeDescription
       action={
         <Button size={fieldSize} fullWidth onClick={() => setIsStarted(true)}>
-          {isReproved ? 'Tentar novamente' : 'Fazer biometria e assinar'}
+          {isReproved ? 'Tentar novamente' : 'Fazer biometria'}
         </Button>
       }
     >

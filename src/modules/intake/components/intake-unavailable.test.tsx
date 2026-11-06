@@ -4,7 +4,7 @@ import { renderWithProviders } from '@/tests/render-with-providers'
 import { IntakeUnavailable } from './intake-unavailable'
 
 describe('IntakeUnavailable', () => {
-  it('offers the support WhatsApp when the proposal was closed', () => {
+  it('offers the support WhatsApp when the order was closed', () => {
     renderWithProviders(<IntakeUnavailable reason='closed' />)
 
     expect(

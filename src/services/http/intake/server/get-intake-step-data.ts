@@ -8,14 +8,12 @@ import { intakeServerFetch } from './intake-server-fetch'
 import { getIntakeAccessToken } from './intake-session'
 
 export type IntakeStepDataByStatus = {
-  [IntakeStepStatus.AnalyseBiometric]: IntakeBiometryStepData
+  [IntakeStepStatus.Biometry]: IntakeBiometryStepData
 }
 
 export type IntakeStepWithData = keyof IntakeStepDataByStatus
 
-const STEPS_WITH_DATA = new Set<IntakeStepStatus>([
-  IntakeStepStatus.AnalyseBiometric,
-])
+const STEPS_WITH_DATA = new Set<IntakeStepStatus>([IntakeStepStatus.Biometry])
 
 export function isIntakeStepWithData(
   status: IntakeStepStatus,
@@ -50,7 +48,7 @@ async function loadStepData(
   status: IntakeStepWithData,
 ): Promise<IntakeStepDataByStatus[typeof status] | null> {
   switch (status) {
-    case IntakeStepStatus.AnalyseBiometric: {
+    case IntakeStepStatus.Biometry: {
       const response = await fetchFromApi<IntakeBiometryStepData>(
         token,
         'intake/biometry',

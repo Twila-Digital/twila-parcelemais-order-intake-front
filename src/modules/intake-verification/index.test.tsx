@@ -41,6 +41,7 @@ describe('IntakeVerification', () => {
   beforeEach(() => {
     toast.error.mockClear()
     toast.success.mockClear()
+    refresh.mockClear()
     intakeService.sendToken.mockReset()
     intakeService.sendToken.mockResolvedValue(undefined)
     intakeService.verifyToken.mockResolvedValue(undefined)
@@ -156,15 +157,21 @@ describe('IntakeVerification', () => {
     })
   })
 
-  it('asks for the code with a resend countdown after a rate limit', async () => {
-    intakeService.sendToken.mockRejectedValue(new ApiError({ status: 429 }))
+  it('asks for the code with the cooldown the API sent after a rate limit', async () => {
+    intakeService.sendToken.mockRejectedValue(
+      new ApiError({
+        status: 429,
+        type: 'Intake.OtpCooldown',
+        retryAfterSeconds: 262,
+      }),
+    )
 
     await chooseChannel()
 
     expect(
       await screen.findByLabelText('Código de verificação'),
     ).toBeInTheDocument()
-    expect(screen.getByText(/novo código em/i)).toBeInTheDocument()
+    expect(screen.getByText(/novo código em/i)).toHaveTextContent('4:22')
     expect(
       screen.getByRole('button', { name: 'Reenviar código' }),
     ).toBeDisabled()
@@ -237,11 +244,57 @@ describe('IntakeVerification', () => {
     )
   })
 
-  it('refreshes the page when the link was replaced', async () => {
-    intakeService.sendToken.mockRejectedValue(new ApiError({ status: 404 }))
+  it('refreshes the page when the link was closed', async () => {
+    intakeService.sendToken.mockRejectedValue(
+      new ApiError({ status: 410, type: 'Intake.InviteClosed' }),
+    )
 
     await chooseChannel()
 
     await waitFor(() => expect(refresh).toHaveBeenCalledOnce())
+    expect(toast.error).not.toHaveBeenCalled()
+  })
+
+  it('warns when no order is linked to the phone on send', async () => {
+    intakeService.sendToken.mockRejectedValue(
+      new ApiError({ status: 404, type: 'Intake.InviteNotFound' }),
+    )
+
+    await chooseChannel()
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Não encontramos seu pedido',
+          description: expect.stringContaining(
+            'Não encontramos um pedido vinculado a este número.',
+          ),
+        }),
+      ),
+    )
+    expect(refresh).not.toHaveBeenCalled()
+    expect(
+      screen.getByRole('button', { name: 'Receber código via SMS' }),
+    ).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('warns when no order is linked to the phone on verify', async () => {
+    intakeService.verifyToken.mockRejectedValue(
+      new ApiError({ status: 404, type: 'Intake.InviteNotFound' }),
+    )
+    const user = await chooseChannel()
+
+    await user.type(
+      await screen.findByLabelText('Código de verificação'),
+      '123456',
+    )
+    await user.click(screen.getByRole('button', { name: 'Confirmar código' }))
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Não encontramos seu pedido' }),
+      ),
+    )
+    expect(refresh).not.toHaveBeenCalled()
   })
 })

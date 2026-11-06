@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Controller } from 'react-hook-form'
 import { PageTitle } from '@/common/components/page-title'
+import { IntakeErrorType } from '@/common/enums/intake-error-type.enum'
 import { useCountdown } from '@/common/hooks/use-countdown'
 import { useFieldSize } from '@/common/hooks/use-field-size'
 import { useForm } from '@/common/hooks/use-form'
@@ -31,6 +32,7 @@ import { VerificationChannelCard } from './components/verification-channel-card'
 import { VerificationCodeInput } from './components/verification-code-input'
 import {
   CODE_RESENT_TOAST,
+  ORDER_NOT_FOUND_TOAST,
   RESEND_CODE_INTERVAL_IN_SECONDS,
   VERIFICATION_CHANNELS,
 } from './constants/verification'
@@ -71,6 +73,19 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
     return isUnavailable
   }
 
+  function handleOrderNotFound(error: unknown) {
+    const isNotFound =
+      error instanceof ApiError && error.type === IntakeErrorType.InviteNotFound
+    if (isNotFound) {
+      toast.error({
+        ...ORDER_NOT_FOUND_TOAST,
+        orientation: 'vertical',
+        closable: true,
+      })
+    }
+    return isNotFound
+  }
+
   async function requestCode(nextChannel: IntakeVerificationChannel) {
     const previousChannel = channel
     const isResend = stage === 'code'
@@ -88,6 +103,10 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
         })
       }
     } catch (error) {
+      if (handleOrderNotFound(error)) {
+        setChannel(previousChannel)
+        return
+      }
       if (handleLinkUnavailable(error)) return
 
       if (
@@ -95,7 +114,9 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
         error.status === HTTP_STATUS.TOO_MANY_REQUESTS
       ) {
         setStage('code')
-        countdown.start(RESEND_CODE_INTERVAL_IN_SECONDS)
+        countdown.start(
+          error.retryAfterSeconds ?? RESEND_CODE_INTERVAL_IN_SECONDS,
+        )
         showErrorToast('Aguarde para pedir um novo código.')
         return
       }
@@ -112,7 +133,7 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
       showLoading()
       router.refresh()
     } catch (error) {
-      if (handleLinkUnavailable(error)) return
+      if (handleOrderNotFound(error) || handleLinkUnavailable(error)) return
 
       handleApiError(error, {
         setError: codeForm.setError,
@@ -131,7 +152,7 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
       noValidate
       className='flex flex-1 flex-col gap-8'
     >
-      <div className='flex flex-col gap-lg tablet:gap-xxl'>
+      <div className='flex flex-col gap-lg tablet:gap-10'>
         <PageTitle
           title='Confirme que é você'
           description='Para proteger seus dados, vamos enviar um código para o seu celular. Como prefere receber?'
@@ -147,6 +168,7 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
               icon={option.icon}
               selected={channel === option.value}
               loading={sendToken.isPending && channel === option.value}
+              muted={sendToken.isPending && channel !== option.value}
               disabled={isChannelLocked}
               onClick={() => requestCode(option.value)}
             />
@@ -208,8 +230,10 @@ export function IntakeVerification({ token }: IntakeVerificationProps) {
         )}
       </div>
 
+      {/* TODO: drop variant='secondary' once the DS maps the Parcele+ primary button to brand-primary */}
       <Button
         type='submit'
+        variant='secondary'
         size={fieldSize}
         fullWidth
         className='mt-auto'

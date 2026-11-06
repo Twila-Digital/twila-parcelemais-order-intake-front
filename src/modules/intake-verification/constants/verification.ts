@@ -20,3 +20,9 @@ export const CODE_RESENT_TOAST = {
   title: 'Código reenviado',
   description: 'Enviamos um novo código de verificação para o seu celular.',
 }
+
+export const ORDER_NOT_FOUND_TOAST = {
+  title: 'Não encontramos seu pedido',
+  description:
+    'Não encontramos um pedido vinculado a este número. Volte para o WhatsApp para conferir seus dados e receber orientações ou tente novamente.',
+}

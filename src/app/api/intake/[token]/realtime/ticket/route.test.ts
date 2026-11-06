@@ -71,7 +71,7 @@ describe('POST realtime/ticket', () => {
     intakeServerFetch.mockResolvedValue({
       ok: false,
       status: 410,
-      problem: { status: 410, type: 'Intake.ProposalClosed' },
+      problem: { status: 410, type: 'Intake.InviteClosed' },
     })
 
     const response = await requestTicket()

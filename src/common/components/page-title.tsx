@@ -18,20 +18,14 @@ export function PageTitle({
     <div className='flex flex-col gap-md tablet:gap-lg'>
       <div className='flex items-center gap-md'>
         {illustration && (
-          <span
-            className='relative h-[51px] shrink-0 overflow-hidden'
-            style={{ width: illustration.width }}
+          <Image
+            src={illustration}
+            alt=''
             aria-hidden
-          >
-            <Image
-              src={illustration.src}
-              alt=''
-              className='absolute max-w-[none]'
-              style={illustration.image}
-              sizes='100px'
-              priority
-            />
-          </span>
+            className='h-[51px] w-auto shrink-0'
+            sizes='70px'
+            priority
+          />
         )}
         <h1 className='flex-1 font-bold font-heading tablet:text-h4 text-h5 leading-[1.4]'>
           {title}
